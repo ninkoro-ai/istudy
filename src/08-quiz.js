@@ -16,6 +16,8 @@
     if(d<1) d=1;
     if(d>TOTAL){ d=TOTAL; }
     $("dayTag").textContent = "第 "+d+" 天 · Day "+d;
+    var hdDay=$("hdDay"); if(hdDay) hdDay.textContent=d;
+    var hdPhase=$("hdPhase"); if(hdPhase) hdPhase.textContent=phaseName(d).split(" ")[0];
     var phase = phaseName(d);
     var perRemain = PERIOD_MAX - S.periodUsed;
     var perTag = '';
