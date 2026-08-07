@@ -27,6 +27,16 @@
     _updBtn = $("updateReload");
   }
   function updateReload(){ location.reload(); }
+  // iOS 专项：非 standalone 的 Safari 提示「添加到主屏幕」路径（无 beforeinstallprompt）
+  (function(){
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+    var standalone = window.navigator.standalone === true
+      || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    if(isIOS && !standalone){
+      var h = $("iosInstallHint");
+      if(h) h.classList.remove("hidden");
+    }
+  })();
   if('serviceWorker' in navigator){
     window.addEventListener('load', function(){
       try{

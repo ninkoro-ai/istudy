@@ -45,6 +45,7 @@
 9. **可访问性**：焦点陷阱、ARIA、键盘导航。
 10. **工程化**：`src/` + `data/*.json` + 极简构建（构建期校验）；ESLint；CI/Pages 工作流；Playwright 冒烟测试；按需渲染。
 11. **UI 原生化**：参照心桥 App 设计规范——手机壳式桌面呈现（480px 应用列 + 衬景）、三段式应用头（品牌 + 第 X 天 + 工具）、底部胶囊 Toast、弹层把手、卡片级联入场、按压反馈、输入防缩放（16px）。
+12. **PWA / iOS WebView 专项**：珊瑚色实底应用头保证 `black-translucent` 白字状态栏可读；弹层高度跟随键盘（visualViewport）；底部弹层安全区适配；iOS 长按菜单/选择手柄禁用；iOS「添加到主屏幕」引导；manifest 补全 `id/display_override/categories`；`format-detection` 防号码误识别。
 
 ## 五、开发 / 测试
 

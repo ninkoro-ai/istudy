@@ -25,3 +25,12 @@
       if(t){ e.preventDefault(); t.click(); }
     }
   });
+  // iOS 键盘适配：弹层内输入框聚焦时滚入可视区，避免被键盘遮挡
+  document.addEventListener('focusin', function(e){
+    var t = e.target;
+    if(!t || !t.tagName || (t.tagName!=='INPUT' && t.tagName!=='TEXTAREA' && t.tagName!=='SELECT')) return;
+    setTimeout(function(){
+      try{ t.scrollIntoView({ block:'nearest', behavior:'smooth' }); }
+      catch(err){ t.scrollIntoView(); }
+    }, 200);
+  });
