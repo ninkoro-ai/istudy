@@ -157,7 +157,7 @@ for (const f of SRC_ORDER) {
   }
   appJs += txt + '\n';
 }
-const touchJs = readFileSync(join(ROOT, 'src', 'touch.js'), 'utf8');
+let touchJs = readFileSync(join(ROOT, 'src', 'touch.js'), 'utf8');
 
 // 语法检查
 try {
