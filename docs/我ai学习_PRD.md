@@ -1,7 +1,7 @@
 # 我ai学习 · 产品需求文档（PRD）
 
 > 文档类型：产品需求文档（可被开发 / 测试 / 设计 agent 直接读取复用）
-> 版本：v2.1（2026-08-07 审计修复后对齐）
+> 版本：v2.2（2026-08-07 功能升级后对齐）
 > 基准版本：仓库 `ninkoro-ai/woai-xuexi`（审计基线 `d744b57`；本副本随本地化改造更新）
 > 数据基线：`tests/unit.test.mjs`（19 项断言）+ `scripts/audit.mjs` + 源码逐段核对
 > 生成日期：2026-08-07
@@ -21,7 +21,7 @@
 | 技术栈 | 纯 HTML/CSS/原生 JS（无框架、无构建步骤） |
 | 部署 | 本地运行（零依赖，`server.js` / `启动-本地服务.bat`）或免费静态托管（Cloudflare Pages 等） |
 | 数据归属 | 全部留存浏览器 `localStorage`，不上云、不注册 |
-| 文档状态 | 已实现对齐（as-built，v2.1） |
+| 文档状态 | 已实现对齐（as-built，v2.2） |
 
 ---
 
@@ -548,6 +548,19 @@ return clamp(round(m), 0, 100)
 6. 完善：`genQuiz` 干扰项同科目优先 + 「属于 / 正确的是 / 错误的是」三种题型。
 7. 清理：移除 `PER_TASK`，新增 `PERIOD_MAX=2` 常量。
 8. 新增：`server.js`、`启动-本地服务.bat`、`README.md`、`scripts/audit.mjs`、`docs/AUDIT_REPORT.md`。
+
+### 14.6 变更记录（v2.2 · 功能升级）
+
+1. **题库**：手写题 34→74 个知识点（340→500 题）；`genQuiz` 升级（`，` 切句回退、同章节干扰项优先、「属于/正确/错误/数值」四题型）；**207 个知识点全部可答题，纯阅读模式不再触发**。
+2. **复习算法**：新增 `REVIEW_CFG`（间隔参数化、自适应阈值、最大步数）；按答对率拉长/缩短间隔与跳步；新增 `S.lastReview`（上次复习成功日基线）与 `S.qStats`（正确率统计）。
+3. **数据与同步**：IndexedDB 镜像（`istudy-store`）+ 清缓存自动恢复；口令加密备份（PBKDF2-SHA256 150k 次 + AES-256-GCM）；新增 `docs/BACKUP_FORMAT.md`、`docs/SYNC_EVALUATION.md`。
+4. **积分经济**：连胜含当天计算；`STREAK_BONUS`（7/14/21/30 天里程碑）；`WRONG_CLEAR_BONUS`（错题清零）；已掌握知识点重复闯关不再重复加分。
+5. **错题重练**：按错误次数间隔 [1,3,7] 天排期，到期「去重练」，通过自动移除并触发清零奖励。
+6. **统计页**：新增第 5 个页签 `page-stats`（掌握度趋势 / 每日热力 / 科目雷达 / 概览，零依赖 SVG）。
+7. **AI 能力**：BYO API Key（浏览器直连 OpenAI 兼容接口，不经中转）；提示词「存为脚本」；评估文档 `docs/AI_INTEGRATION.md`。
+8. **PWA 体验**：新版本提示条 + 一键刷新；`beforeinstallprompt` 安装引导；桌面宽屏媒体查询。
+9. **可访问性**：弹窗 `role="dialog" aria-modal`、焦点陷阱、日历/折叠项键盘导航。
+10. **工程化**：`src/` 多文件 + `data/*.json` 外置 + `build/build.mjs`（构建期校验 + 可选压缩）；ESLint 扁平配置；`.github/workflows/ci.yml` 与 `pages.yml`；Playwright 冒烟测试；`renderAll` 按激活页按需渲染。
 
 ---
 *文档结束。本文档以 `ninkoro-ai/woai-xuexi@d744b57` 的 `app.html` 真实实现为唯一事实来源。*

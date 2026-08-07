@@ -26,7 +26,6 @@ function extract(name) {
 }
 function loadFn(name) {
   // 直接 eval：使抽取出的函数闭包捕获本模块作用域（esc/dateStr/S/TOTAL 等依赖）
-  // eslint-disable-next-line no-eval
   return eval('(' + extract(name) + ')');
 }
 
@@ -35,6 +34,19 @@ const TOTAL = Number((html.match(/var TOTAL\s*=\s*(\d+)/) || [])[1]);
 const KEY = (html.match(/var KEY\s*=\s*"([^"]+)"/) || [])[1];
 const PER_KP = Number((html.match(/var PER_KP\s*=\s*(\d+)/) || [])[1]);
 const PERIOD_MAX = Number((html.match(/var PERIOD_MAX\s*=\s*(\d+)/) || [])[1]);
+const EB = [1, 3, 7, 15, 30];
+const REVIEW_CFG = {
+  intervals: EB,
+  adaptive: true,
+  fastThreshold: 0.9,
+  slowThreshold: 0.6,
+  maxStep: 5
+};
+const WRONG_CLEAR_BONUS = Number((html.match(/var WRONG_CLEAR_BONUS\s*=\s*(\d+)/) || [])[1]);
+const STREAK_BONUS = eval('(' + html.match(/var STREAK_BONUS\s*=\s*(\{[^}]*\})/)[1] + ')');
+// DOM/反馈桩：统计与错题函数依赖的浏览器对象
+const $ = () => null;
+function showToast() {}
 
 const esc = loadFn('esc');
 const escAttr = loadFn('escAttr');
@@ -48,7 +60,25 @@ const seededRand = loadFn('seededRand');
 const shuffle = loadFn('shuffle');
 const range = loadFn('range');
 const hashStr = loadFn('hashStr');
+const splitFacts = loadFn('splitFacts');
+const uniqArr = loadFn('uniqArr');
+const numOf = loadFn('numOf');
 const genQuiz = loadFn('genQuiz');
+const recordQuiz = loadFn('recordQuiz');
+const quizAccuracy = loadFn('quizAccuracy');
+const reviewIntervalFor = loadFn('reviewIntervalFor');
+const nextReview = loadFn('nextReview');
+const recordReview = loadFn('recordReview');
+const wrongCount = loadFn('wrongCount');
+const daysBetween = loadFn('daysBetween');
+const kpMastery = loadFn('kpMastery');
+const recalcMastery = loadFn('recalcMastery');
+const wrongRetryDue = loadFn('wrongRetryDue');
+const removeWrongFor = loadFn('removeWrongFor');
+const wrongCountOf = loadFn('wrongCountOf');
+const masteryTrendPoints = loadFn('masteryTrendPoints');
+const subMasteryPct = loadFn('subMasteryPct');
+const addRec = loadFn('addRec');
 
 // genQuiz 依赖的科目/知识点库桩
 const SUBJECTS = [{ id: 's1' }, { id: 's2' }];
@@ -209,6 +239,105 @@ test('genQuiz 生成两套题，题型覆盖“属于/正确/错误”', () => {
 test('genQuiz 对不足 2 句的知识点返回 null（走纯阅读模式）', () => {
   const src = extract('genQuiz');
   assert.ok(src.includes('if(facts.length<2) return null;'));
+});
+
+test('recordQuiz 累计正确率', () => {
+  S.qStats = {};
+  recordQuiz('s1', 'a1', 4, 5);
+  recordQuiz('s1', 'a1', 3, 5);
+  assert.equal(quizAccuracy('s1', 'a1'), 7 / 10);
+  assert.equal(quizAccuracy('s1', 'x'), null);
+});
+
+test('自适应间隔：高正确率拉长、低正确率缩短', () => {
+  S.revStep = { s1: { a1: 1, a2: 1, a3: 1 } };
+  S.qStats = {
+    's1:a1': { ok: 10, total: 10 },
+    's1:a2': { ok: 2, total: 5 },
+    's1:a3': { ok: 7, total: 10 }
+  };
+  assert.equal(reviewIntervalFor('s1', 'a1'), Math.round(3 * 1.5)); // 快 → 5（步1 基础 3）
+  assert.equal(reviewIntervalFor('s1', 'a2'), Math.max(1, Math.round(3 * 0.6))); // 慢 → 2
+  assert.equal(reviewIntervalFor('s1', 'a3'), 3); // 中等 → 基础
+});
+
+test('nextReview 基线优先「上次复习成功日」', () => {
+  S.kpDone = { s1: { a1: 1 } };
+  S.revStep = { s1: { a1: 0 } };
+  S.lastStudy = { s1: { a1: '2026-08-06' } };
+  S.lastReview = { s1: { a1: '2026-08-05' } };
+  S.qStats = {};
+  assert.equal(nextReview('s1', 'a1'), '2026-08-06'); // 08-05 + 1
+  delete S.lastReview.s1.a1;
+  assert.equal(nextReview('s1', 'a1'), '2026-08-07'); // 回退 lastStudy
+  S.revStep.s1.a1 = REVIEW_CFG.maxStep;
+  assert.equal(nextReview('s1', 'a1'), null); // 已达上限
+});
+
+test('recordReview：高正确率跳步 +2，并记录上次复习日', () => {
+  S.kpDone = { s1: { a1: 1 } };
+  S.revStep = { s1: { a1: 0 } };
+  S.lastReview = {};
+  S.lastStudy = { s1: { a1: '2026-08-01' } };
+  S.mastery = {};
+  S.wrong = [];
+  S.qStats = {};
+  recordReview('s1', 'a1', 1.0);
+  assert.equal(S.revStep.s1.a1, 2);
+  assert.match(S.lastReview.s1.a1, /^\d{4}-\d{2}-\d{2}$/);
+  // 低正确率：不前进
+  S.revStep.s1.a1 = 2;
+  recordReview('s1', 'a1', 0.2);
+  assert.equal(S.revStep.s1.a1, 2);
+});
+
+test('错题重练按 [1,3,7] 天间隔排期', () => {
+  S.wrong = [{ sub: 's1', kid: 'a1', qi: 0, date: '2026-08-01' }];
+  assert.equal(wrongRetryDue(S.wrong[0]), true);   // 1 天后到期（08-02 ≤ 今天）
+  S.wrong = [{ sub: 's1', kid: 'a1', qi: 0, date: dateStr(0) }];
+  assert.equal(wrongRetryDue(S.wrong[0]), false);  // 今天才错，1 天后才到期
+  S.wrong = [
+    { sub: 's1', kid: 'a1', qi: 0, date: '2026-08-01' },
+    { sub: 's1', kid: 'a1', qi: 1, date: '2026-08-02' }
+  ];
+  assert.equal(wrongRetryDue(S.wrong[0]), true);   // 第 2 次错误 → 间隔 3 天
+});
+
+test('removeWrongFor：清空错题触发清零奖励', () => {
+  S.wrong = [
+    { sub: 's1', kid: 'a1', qi: 0, date: '2026-08-01' },
+    { sub: 's1', kid: 'a1', qi: 1, date: '2026-08-02' },
+    { sub: 's1', kid: 'a2', qi: 0, date: '2026-08-03' }
+  ];
+  S.score = 100;
+  S.records = [];
+  removeWrongFor('s1', 'a1');
+  assert.equal(S.wrong.length, 1);                 // 只清 a1
+  assert.equal(S.score, 100);                      // 未清空，不奖励
+  removeWrongFor('s1', 'a2');
+  assert.equal(S.wrong.length, 0);
+  assert.equal(S.score, 100 + WRONG_CLEAR_BONUS);  // 清空奖励
+  assert.ok(S.records.some((r) => r.reason.includes('错题全部清零')));
+});
+
+test('掌握度趋势按 lastStudy 日期累计', () => {
+  S.startDay = '2026-08-02';
+  S.kpDone = { s1: { a1: 1, a2: 1 }, s2: { b1: 1 } };
+  S.lastStudy = { s1: { a1: '2026-08-02', a2: '2026-08-03' }, s2: { b1: '2026-08-05' } };
+  const pts = masteryTrendPoints();
+  assert.ok(Array.isArray(pts) && pts.length >= 6);
+  assert.equal(pts[0].date, '2026-08-02');
+  assert.equal(pts[0].n, 1);
+  assert.equal(pts[1].n, 2);
+  assert.equal(pts[3].n, 3);   // 08-05 累计 3
+});
+
+test('科目掌握度百分比与全勤里程碑配置存在', () => {
+  S.kpDone = { s1: { a1: 1, a2: 1 } };
+  const pct = subMasteryPct('s1');   // KP_LIB.s1 共 3 个
+  assert.equal(pct, Math.round(2 / 3 * 100));
+  assert.equal(STREAK_BONUS[7], 30);
+  assert.equal(STREAK_BONUS[30], 120);
 });
 
 test('导出对象包含全部状态字段（含 attempts/wrong/准备弹窗字段）', () => {

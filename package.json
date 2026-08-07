@@ -1,0 +1,20 @@
+{
+  "name": "istudy",
+  "version": "2.2.0",
+  "private": true,
+  "description": "我ai学习 · 本地化备考工作台（零后端单文件 PWA）",
+  "scripts": {
+    "build": "node build/build.mjs",
+    "build:min": "node build/build.mjs --minify",
+    "validate": "node build/build.mjs --dry-run",
+    "test": "node --test tests/unit.test.mjs",
+    "audit": "node scripts/audit.mjs",
+    "serve": "node server.js",
+    "e2e": "node tests/e2e/smoke.mjs",
+    "lint": "eslint src build tests scripts server.js eslint.config.mjs"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "playwright-core": "1.62"
+  }
+}

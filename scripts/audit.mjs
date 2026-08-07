@@ -9,17 +9,11 @@ import { dirname, join } from 'path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const html = readFileSync(join(__dirname, '..', 'app.html'), 'utf8');
 
-function blockOf(name) {
-  const re = new RegExp('var ' + name + ' = \\{');
-  const m = html.match(re);
+function jsonOf(name) {
+  // 构建产物中数据以 JSON 内联（var NAME = {...};）
+  const m = html.match(new RegExp('var ' + name + ' = (\\{.*?\\});', 's'));
   if (!m) return null;
-  let i = m.index + m[0].length - 1;
-  let depth = 0;
-  for (; i < html.length; i++) {
-    if (html[i] === '{') depth++;
-    else if (html[i] === '}') { depth--; if (depth === 0) break; }
-  }
-  return html.slice(m.index, i + 1);
+  try { return JSON.parse(m[1]); } catch (e) { return null; }
 }
 
 function valueOf(name) {
@@ -27,15 +21,13 @@ function valueOf(name) {
   return m ? m[1].trim() : null;
 }
 
-const KP_LIB = blockOf('KP_LIB');
-const QUIZ = blockOf('QUIZ');
-const PLAN = blockOf('PLAN');
+const KP_LIB = jsonOf('KP_LIB') || {};
+const QUIZ = jsonOf('QUIZ') || {};
+const PLAN = jsonOf('PLAN') || {};
 
-const kpRe = /\{id:"([a-z]\d+)",t:"([^"]+)",b:"([^"]+)",src:"([^"]+)"\}/g;
 const kps = [];
-let m;
-while ((m = kpRe.exec(KP_LIB)) !== null) {
-  kps.push({ id: m[1], t: m[2], b: m[3], src: m[4] });
+for (const sub of Object.keys(KP_LIB)) {
+  for (const k of KP_LIB[sub]) kps.push({ id: k.id, t: k.t, b: k.b, src: k.src, sub });
 }
 
 function subOf(id) {
@@ -52,14 +44,24 @@ for (const [s, n] of Object.entries(bySub)) console.log(`${s}: ${n}`);
 console.log(`知识点总数: ${kps.length}`);
 
 console.log('\n===== 手写题库 QUIZ 覆盖率 =====');
-const quizKids = new Set([...QUIZ.matchAll(/"([a-z]\d+)":\s*\[/g)].map((x) => x[1]));
-const quizQCount = (QUIZ.match(/"q":/g) || []).length;
+const quizKids = new Set();
+let quizQCount = 0;
+for (const sub of Object.keys(QUIZ)) {
+  for (const kid of Object.keys(QUIZ[sub])) {
+    quizKids.add(kid);
+    for (const set of QUIZ[sub][kid]) quizQCount += set.length;
+  }
+}
 console.log(`手写题覆盖知识点: ${quizKids.size}/${kps.length} = ${(quizKids.size / kps.length * 100).toFixed(1)}%`);
 console.log(`手写题目总数: ${quizQCount}`);
 
 console.log('\n===== 自动出题 genQuiz 可用率（kp.b 切句） =====');
 function factsOf(b) {
-  return b.split(/[；;。.]/).map((x) => x.trim()).filter((x) => x.length > 6);
+  let parts = (b || '').split(/[；;。]+/).map((x) => x.trim()).filter((x) => x.length > 6);
+  if (parts.length < 2) {
+    parts = (b || '').split(/[，,；;。]+/).map((x) => x.trim()).filter((x) => x.length > 6);
+  }
+  return parts;
 }
 const allFacts = kps.reduce((a, k) => a.concat(factsOf(k.b)), []);
 let ok = 0;
@@ -73,20 +75,8 @@ console.log(`自动题可用: ${ok}/${kps.length} = ${(ok / kps.length * 100).to
 if (noQuiz.length) console.log('无题可出: ' + noQuiz.join('、'));
 
 console.log('\n===== PLAN 每日计划长度（应为 90） =====');
-const subRe = /^\s{4}([a-z0-9]+):\s*\[/gm;
-let sm;
 const planLens = {};
-while ((sm = subRe.exec(PLAN)) !== null) {
-  const s = sm[1];
-  let i = sm.index + sm[0].length - 1;
-  let depth = 0;
-  for (; i < PLAN.length; i++) {
-    if (PLAN[i] === '[') depth++;
-    else if (PLAN[i] === ']') { depth--; if (depth === 0) break; }
-  }
-  const blk = PLAN.slice(sm.index + sm[0].length - 1, i + 1);
-  planLens[s] = (blk.match(/"/g) || []).length / 2;
-}
+for (const s of Object.keys(PLAN)) planLens[s] = PLAN[s].length;
 for (const [s, n] of Object.entries(planLens)) console.log(`${s}: ${n}`);
 
 console.log('\n===== 常量核对（PRD §3） =====');
@@ -102,7 +92,8 @@ console.log(`PER_TASK 引用次数: ${perTaskRefs}（0 = 已移除）`);
 console.log('\n===== 导出 / 导入字段完整性（对照 S 字段） =====');
 const S_FIELDS = ['startDay', 'done', 'kpDone', 'score', 'records', 'redeemed', 'curSub',
   'attempts', 'wrong', 'easyDay', 'periodUsed', 'periodMonth', 'periodToday', 'notes',
-  'reviewed', 'studyDays', 'lastStudy', 'revStep', 'mastery', 'prepDate', 'prepTriggered', 'prepShown'];
+  'reviewed', 'studyDays', 'lastStudy', 'lastReview', 'revStep', 'mastery', 'qStats',
+  'milestones', 'prepDate', 'prepTriggered', 'prepShown'];
 const exportSec = html.slice(html.indexOf('btnExport").addEventListener'), html.indexOf('btnImport").addEventListener'));
 const importSec = html.slice(html.indexOf('function sanitizeImport'), html.indexOf('function sanitizeImport') + 2200);
 for (const f of S_FIELDS) {
