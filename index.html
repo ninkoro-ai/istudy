@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0F0720">
+<meta name="description" content="我ai学习 —— 专为 2026 考研专硕 095131 农艺与种业打造的 AI 备考工作台。207 个知识点、90 天计划、艾宾浩斯自动复习，数据全部留在本机。打开网页即开即学。">
+<title>我ai学习 · 2026 考研备考工作台</title>
+<style>
+  :root{
+    --coral:#FF6B8A; --coral-d:#E8557A; --coral-2:#FF8FA8;
+    --gold:#FFD08A;
+    --mint:#7FC8A9; --mint-d:#2E7D52;
+    --amber:#E9A23B;
+
+    --ink:#15110F; --ink-2:#5F544E; --ink-3:#9A8E88;
+    --cream:#FFF8F2;
+    --line:#EFE3DC;
+
+    --stage:#1C1330; --stage-2:#281B40; --stage-3:#382A52;
+    --on-dark:#FFFFFF;
+    --on-dark-2:rgba(255,255,255,.66);
+    --on-dark-3:rgba(255,255,255,.40);
+    --hairline:rgba(255,255,255,.10);
+
+    --maxw:1180px;
+    --gut:clamp(18px,4.4vw,32px);
+    --sec-y:clamp(72px,11vw,132px);
+    --ease:cubic-bezier(.22,1,.36,1);
+    /* 统一动效时长体系：按压最利落、悬浮/载入居中，全部共用 --ease 单一缓动语言 */
+    --dur-press:.14s;
+    --dur-hover:.34s;
+    --dur-reveal:.64s;
+    --nav-h:60px;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--on-dark);
+    /* 整页单一演化背景：随滚动从最深到最浓再落回深，模块不再各自上色 */
+    background:linear-gradient(180deg,
+      #0F0720 0%,
+      #160B2E 8%,
+      #1E103D 20%,
+      #271248 33%,
+      #322056 46%,
+      #3D1A63 58%,
+      #492172 70%,
+      #5B267A 82%,
+      #52206F 92%,
+      #3D1852 100%);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* 固定环境光层：贯穿全页的柔光团，稳定被照亮的空间（无动画、不影响阅读） */
+  .ambient{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
+    background:
+      radial-gradient(40vw 40vw at 14% 16%, rgba(255,107,138,.14), transparent 62%),
+      radial-gradient(34vw 34vw at 86% 26%, rgba(127,200,169,.09), transparent 62%),
+      radial-gradient(48vw 48vw at 50% 58%, rgba(255,208,138,.08), transparent 64%),
+      radial-gradient(46vw 46vw at 72% 92%, rgba(123,62,110,.20), transparent 66%);
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--coral);color:#fff;}
+
+  .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding-left:var(--gut);padding-right:var(--gut);}
+  section{padding:var(--sec-y) 0;}
+  .center{text-align:center;}
+
+  /* ============ Typography scale (发布会式) ============ */
+  .eyebrow{
+    display:inline-block;
+    font-size:clamp(11px,1.5vw,13px);font-weight:800;
+    letter-spacing:.22em;text-transform:uppercase;
+    color:var(--coral);margin-bottom:clamp(12px,2vw,18px);
+  }
+  .display{
+    font-size:clamp(32px,7.2vw,72px);
+    font-weight:900;letter-spacing:-.035em;line-height:1.06;
+    margin:0;overflow-wrap:break-word;
+  }
+  .headline{
+    font-size:clamp(26px,5.4vw,52px);
+    font-weight:900;letter-spacing:-.03em;line-height:1.14;
+    margin:0;overflow-wrap:break-word;
+  }
+  .subline{
+    font-size:clamp(14.5px,2.1vw,19px);
+    line-height:1.75;margin:clamp(14px,2.4vw,22px) 0 0;
+    overflow-wrap:break-word;
+  }
+  .grad{
+    background:linear-gradient(104deg,#FF8FA8 0%,#FF6B8A 42%,var(--gold) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hl{color:var(--coral);}
+
+  /* ============ Buttons ============ */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-size:clamp(15px,1.8vw,16.5px);font-weight:800;
+    padding:clamp(14px,2.2vw,17px) clamp(24px,4vw,34px);
+    border-radius:999px;border:1px solid transparent;
+    transition:transform var(--dur-press) var(--ease),box-shadow var(--dur-hover) var(--ease),background-color var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease);
+    cursor:pointer;white-space:nowrap;line-height:1.2;
+    will-change:transform;
+  }
+  /* 按压即时反馈：pointer-down 即响应，且用同一缓动语言 */
+  .btn:active{transform:scale(.96);transition-duration:var(--dur-press);}
+  .btn:focus-visible{outline:2px solid var(--coral-2);outline-offset:3px;}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--coral-2),var(--coral));
+    color:#fff;box-shadow:0 14px 34px rgba(255,107,138,.40);
+  }
+  .btn-primary:hover{box-shadow:0 20px 44px rgba(255,107,138,.52);transform:translateY(-2px);}
+  .btn-ghost{background:rgba(255,255,255,.07);color:#fff;border-color:rgba(255,255,255,.26);}
+  .btn-ghost:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.44);}
+  .btn-dark{background:var(--ink);color:#fff;}
+  .btn-dark:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(0,0,0,.22);}
+
+  /* ============ Nav ============ */
+  .nav{
+    position:fixed;inset:0 0 auto 0;z-index:100;
+    background:rgba(15,7,32,.72);
+    -webkit-backdrop-filter:blur(14px) saturate(1.3);
+    backdrop-filter:blur(14px) saturate(1.3);
+    border-bottom:1px solid var(--hairline);
+  }
+  .nav .wrap{display:flex;justify-content:space-between;align-items:center;height:var(--nav-h);gap:12px;}
+  .nav .logo{display:flex;align-items:center;gap:9px;font-weight:900;color:#fff;font-size:clamp(15px,2.2vw,17px);letter-spacing:-.02em;}
+  .nav .logo i{
+    width:28px;height:28px;flex:none;border-radius:9px;
+    background:linear-gradient(135deg,var(--coral-2),var(--coral));
+    display:grid;place-items:center;font-size:13.5px;font-style:normal;color:#fff;font-weight:900;
+  }
+  .nav .links{display:flex;align-items:center;gap:clamp(14px,2.4vw,26px);}
+  .nav .links a.txt{color:var(--on-dark-2);font-size:14px;font-weight:600;transition:color .2s;}
+  .nav .links a.txt:hover{color:#fff;}
+  .nav .btn{padding:9px 18px;font-size:13.5px;box-shadow:0 6px 18px rgba(255,107,138,.34);}
+  .nav .btn .short{display:none;}
+
+  /* ============ Hero ============ */
+  .hero{
+    position:relative;isolation:isolate;
+    min-height:100svh;
+    display:flex;align-items:center;
+    padding:calc(var(--nav-h) + clamp(48px,10vw,90px)) 0 clamp(44px,8vw,80px);
+    color:#fff;
+    overflow:hidden;
+    text-align:center;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(44% 34% at 16% 24%, rgba(255,107,138,.26), transparent 64%),
+      radial-gradient(40% 30% at 86% 22%, rgba(127,200,169,.16), transparent 64%),
+      radial-gradient(52% 40% at 50% 108%, rgba(255,208,138,.13), transparent 66%);
+  }
+  .hero .badge{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:7px 15px;border-radius:999px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);
+    font-size:clamp(11.5px,1.7vw,13px);font-weight:700;letter-spacing:.06em;
+    color:#fff;margin-bottom:clamp(20px,3.4vw,30px);
+    max-width:100%;
+  }
+  .hero .badge .dot{
+    width:7px;height:7px;flex:none;border-radius:99px;background:var(--mint);
+    box-shadow:0 0 10px var(--mint);
+  }
+  .hero h1{
+    font-size:clamp(46px,12vw,116px);
+    font-weight:900;letter-spacing:-.05em;line-height:.94;margin:0;
+  }
+  .hero .claim{
+    font-size:clamp(19px,4.2vw,40px);
+    font-weight:850;letter-spacing:-.02em;line-height:1.28;
+    margin:clamp(18px,3vw,28px) auto 0;max-width:18em;
+    color:#fff;overflow-wrap:break-word;
+  }
+  .hero .sub{
+    font-size:clamp(14px,2.1vw,18px);
+    color:var(--on-dark-2);line-height:1.72;
+    margin:clamp(12px,2vw,18px) auto 0;max-width:34em;
+    overflow-wrap:break-word;
+  }
+  .hero .actions{
+    display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+    margin-top:clamp(26px,4.4vw,40px);
+  }
+  .hero .actions .btn{flex:0 1 auto;}
+
+  /* Hero spec strip */
+  .spec-strip{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:clamp(10px,2vw,18px);
+    margin-top:clamp(34px,5.6vw,58px);
+    padding-top:clamp(22px,3.4vw,32px);
+    border-top:1px solid;
+    border-image:linear-gradient(90deg,transparent,var(--hairline),transparent) 1;
+  }
+  .spec-strip .s{min-width:0;}
+  .spec-strip .n{
+    font-size:clamp(22px,4.6vw,40px);font-weight:900;letter-spacing:-.03em;
+    line-height:1.05;color:#fff;
+  }
+  .spec-strip .n em{font-style:normal;font-size:.5em;font-weight:800;margin-left:2px;color:var(--on-dark-2);}
+  .spec-strip .l{
+    font-size:clamp(10.5px,1.6vw,13px);color:var(--on-dark-3);
+    margin-top:6px;font-weight:600;letter-spacing:.04em;
+    overflow-wrap:break-word;
+  }
+  .scroll-hint{
+    margin-top:clamp(26px,4vw,42px);
+    color:var(--on-dark-3);font-size:12px;letter-spacing:.16em;font-weight:700;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .scroll-hint svg{opacity:.6;animation:bob 2.1s var(--ease) infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
+  /* 首屏载入序列：统一缓动 + 同向上升，制造「元素依次载入」的连贯节奏 */
+  @keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  .hero .wrap > *{animation:heroIn var(--dur-reveal) var(--ease) both;}
+  .hero .wrap > *:nth-child(1){animation-delay:.04s}
+  .hero .wrap > *:nth-child(2){animation-delay:.12s}
+  .hero .wrap > *:nth-child(3){animation-delay:.20s}
+  .hero .wrap > *:nth-child(4){animation-delay:.28s}
+  .hero .wrap > *:nth-child(5){animation-delay:.36s}
+  .hero .wrap > *:nth-child(6){animation-delay:.44s}
+  .hero .wrap > *:nth-child(7){animation-delay:.52s}
+
+  /* ============ Numbers band ============ */
+  .band-dark{
+    position:relative;isolation:isolate;
+    background:transparent;
+    color:#fff;
+  }
+  /* 过渡光晕：Hero 底部 → 数字墙，珊瑚粉柔光融入 */
+  .band-dark::before{
+    content:"";position:absolute;left:0;right:0;top:-130px;height:clamp(160px,22vw,300px);
+    z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(255,107,138,.12), transparent 70%);
+  }
+  .band-dark .headline{color:#fff;}
+  .band-dark .subline{color:var(--on-dark-2);}
+
+  .stat-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:clamp(14px,2.6vw,26px);
+    margin-top:clamp(34px,5.4vw,58px);
+  }
+  .stat{
+    padding:clamp(20px,3.2vw,30px) clamp(12px,2vw,20px);
+    border:1px solid var(--hairline);border-radius:20px;
+    background:rgba(255,255,255,.032);
+    text-align:center;min-width:0;
+    transition:border-color var(--dur-hover) var(--ease),background-color var(--dur-hover) var(--ease),transform var(--dur-hover) var(--ease);
+  }
+  .stat:hover{border-color:rgba(255,107,138,.42);background:rgba(255,107,138,.06);transform:translateY(-3px);}
+  .stat .n{
+    font-size:clamp(30px,6.4vw,58px);font-weight:900;letter-spacing:-.045em;line-height:1;
+  }
+  .stat .n em{font-style:normal;font-size:.42em;font-weight:800;margin-left:3px;color:var(--on-dark-2);letter-spacing:0;}
+  .stat .l{margin-top:10px;font-size:clamp(12px,1.8vw,14.5px);color:var(--on-dark-2);font-weight:600;}
+  .stat .d{margin-top:4px;font-size:clamp(10.5px,1.5vw,12.5px);color:var(--on-dark-3);}
+
+  /* ============ Pillars (卖点分屏) ============ */
+  .band-light{background:transparent;color:#fff;}
+  .band-cream{background:transparent;color:#fff;}
+  .band-light .subline,.band-cream .subline{color:var(--on-dark-2);}
+
+  .pillar{
+    display:grid;grid-template-columns:minmax(0,.42fr) minmax(0,.58fr);
+    gap:clamp(22px,5vw,64px);align-items:center;
+    padding:clamp(38px,6vw,64px) 0;
+    border-bottom:1px solid;
+    border-image:linear-gradient(90deg,transparent,var(--hairline),transparent) 1;
+  }
+  .pillar:last-child{border-bottom:0;}
+  .pillar .no{
+    font-size:clamp(52px,13vw,132px);font-weight:900;letter-spacing:-.06em;line-height:.86;
+    background:linear-gradient(150deg,var(--coral-2),var(--coral) 55%,var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    opacity:.92;
+  }
+  .pillar .no small{display:block;font-size:clamp(15px,2.4vw,22px);font-weight:900;letter-spacing:.04em;color:#fff;margin-top:clamp(6px,1.2vw,12px);-webkit-text-fill-color:#fff;}
+  .pillar h3{
+    font-size:clamp(21px,4.1vw,38px);font-weight:900;letter-spacing:-.028em;line-height:1.24;margin:0;
+    overflow-wrap:break-word;
+  }
+  .pillar p{
+    font-size:clamp(14px,1.95vw,17px);color:var(--on-dark-2);line-height:1.78;margin:clamp(10px,1.8vw,16px) 0 0;
+    overflow-wrap:break-word;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:clamp(14px,2.2vw,20px);}
+  .chips span{
+    font-size:clamp(11.5px,1.6vw,13px);font-weight:700;color:var(--on-dark-2);
+    background:rgba(255,255,255,.07);border:1px solid var(--hairline);border-radius:999px;padding:7px 13px;
+  }
+  .band-light .chips span{background:rgba(255,255,255,.07);}
+
+  /* ============ Quote (金句屏) ============ */
+  .quote{
+    position:relative;isolation:isolate;
+    background:transparent;
+    color:#fff;text-align:center;
+  }
+  /* 过渡光晕：核心卖点 → AI 讲题，暖金柔光融入 */
+  .quote::before{
+    content:"";position:absolute;left:0;right:0;top:-120px;height:clamp(160px,22vw,300px);
+    z-index:-1;pointer-events:none;
+    background:radial-gradient(56% 100% at 50% 100%, rgba(255,208,138,.12), transparent 70%);
+  }
+  .quote .big{
+    font-size:clamp(24px,5.8vw,58px);font-weight:900;letter-spacing:-.035em;line-height:1.22;
+    margin:0 auto;max-width:16em;overflow-wrap:break-word;
+  }
+  .quote .big .grad{display:inline;}
+  .quote .note{
+    margin:clamp(18px,3vw,28px) auto 0;max-width:34em;
+    color:var(--on-dark-2);font-size:clamp(14px,2vw,17.5px);line-height:1.75;
+    overflow-wrap:break-word;
+  }
+  .ai-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:clamp(10px,2vw,16px);margin-top:clamp(30px,5vw,50px);
+  }
+  .ai-card{
+    border:1px solid var(--hairline);border-radius:18px;
+    background:rgba(255,255,255,.035);padding:clamp(16px,2.6vw,24px) clamp(12px,2vw,18px);
+    text-align:left;min-width:0;
+  }
+  .ai-card .k{font-size:clamp(13px,1.9vw,15.5px);font-weight:850;color:#fff;}
+  .ai-card .v{font-size:clamp(11.5px,1.7vw,13.5px);color:var(--on-dark-2);margin-top:6px;line-height:1.6;}
+
+  /* ============ Steps ============ */
+  .steps{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:clamp(12px,2.2vw,20px);margin-top:clamp(32px,5vw,52px);
+    counter-reset:st;
+  }
+  .step{
+    position:relative;min-width:0;color:var(--on-dark);
+    background:rgba(255,255,255,.05);border:1px solid var(--hairline);border-radius:20px;
+    padding:clamp(20px,3vw,28px) clamp(16px,2.4vw,22px);
+    transition:transform var(--dur-hover) var(--ease),box-shadow var(--dur-hover) var(--ease),background-color var(--dur-hover) var(--ease);
+  }
+  .step:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.28);background:rgba(255,255,255,.08);}
+  .step .num{
+    font-size:clamp(26px,4.4vw,40px);font-weight:900;letter-spacing:-.04em;line-height:1;
+    color:var(--coral);opacity:.5;
+  }
+  .step h4{margin:clamp(8px,1.4vw,12px) 0 6px;font-size:clamp(15px,2.1vw,18px);font-weight:850;letter-spacing:-.015em;color:#fff;}
+  .step p{margin:0;color:var(--on-dark-2);font-size:clamp(12.5px,1.7vw,14.5px);line-height:1.62;overflow-wrap:break-word;}
+
+  /* ============ Rules (次要信息, 收敛) ============ */
+  .rules{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:clamp(10px,1.8vw,14px);
+    max-width:920px;margin:clamp(30px,4.6vw,46px) auto 0;text-align:left;
+  }
+  .rule{
+    background:rgba(255,255,255,.05);border:1px solid var(--hairline);border-radius:16px;color:var(--on-dark);
+    padding:clamp(16px,2.4vw,20px) clamp(16px,2.4vw,22px);min-width:0;
+  }
+  .rule .t{
+    display:inline-flex;align-items:center;
+    font-size:12px;font-weight:850;color:#fff;letter-spacing:.03em;
+    background:linear-gradient(135deg,var(--coral),var(--coral-d));
+    border-radius:8px;padding:5px 11px;margin-bottom:10px;
+  }
+  .rule .t.mint{background:linear-gradient(135deg,var(--mint),var(--mint-d));}
+  .rule .t.amber{background:linear-gradient(135deg,var(--amber),#C9791B);}
+  .rule .t.ink{background:linear-gradient(135deg,#5F544E,#2A2320);}
+  .rule .b{font-size:clamp(13px,1.8vw,14.8px);color:var(--on-dark-2);line-height:1.68;overflow-wrap:break-word;}
+  .rule .b b{color:#fff;font-weight:800;}
+
+  /* ============ Footer CTA ============ */
+  .foot{
+    position:relative;isolation:isolate;
+    background:transparent;
+    color:#fff;text-align:center;
+    padding:clamp(70px,11vw,130px) 0 clamp(40px,6vw,64px);
+  }
+  /* 过渡光晕：打卡规则 → 底部 CTA，珊瑚粉高潮柔光融入 */
+  .foot::before{
+    content:"";position:absolute;left:0;right:0;top:-100px;height:clamp(180px,26vw,340px);
+    z-index:-1;pointer-events:none;
+    background:radial-gradient(70% 100% at 50% 100%, rgba(255,107,138,.18), transparent 72%);
+  }
+  .foot .display{color:#fff;}
+  .foot .subline{color:var(--on-dark-2);margin-left:auto;margin-right:auto;max-width:30em;}
+  .foot .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:clamp(26px,4vw,38px);}
+  .foot-note{
+    color:var(--on-dark-3);font-size:clamp(11px,1.5vw,12.5px);
+    margin-top:clamp(34px,5vw,54px);padding-top:clamp(20px,3vw,28px);
+    border-top:1px solid;
+    border-image:linear-gradient(90deg,transparent,var(--hairline),transparent) 1;line-height:1.8;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .foot-note a{color:var(--on-dark-2);text-decoration:underline;text-underline-offset:3px;}
+
+  /* ============ Reveal (渐入, 无 JS 时默认可见) ============ */
+  .js .reveal{opacity:0;transform:translateY(18px) scale(.985);}
+  .js .reveal.in{opacity:1;transform:none;transition:opacity var(--dur-reveal) var(--ease),transform var(--dur-reveal) var(--ease);will-change:transform,opacity;}
+
+  /* ============ Responsive ============ */
+  @media (max-width:900px){
+    .pillar{grid-template-columns:1fr;gap:clamp(14px,3vw,22px);}
+    .pillar .no{display:flex;align-items:baseline;gap:14px;line-height:1;}
+    .pillar .no small{margin-top:0;}
+    .ai-grid{grid-template-columns:repeat(2,1fr);}
+    .steps{grid-template-columns:repeat(2,1fr);}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .nav .links a.txt{display:none;}
+  }
+  @media (max-width:600px){
+    .spec-strip{grid-template-columns:repeat(2,1fr);gap:16px 12px;}
+    .rules{grid-template-columns:1fr;}
+    .hero .actions{flex-direction:column;align-items:stretch;}
+    .hero .actions .btn{width:100%;}
+    .foot .actions{flex-direction:column;align-items:stretch;}
+    .foot .actions .btn{width:100%;}
+  }
+  @media (max-width:420px){
+    .nav .btn{padding:8px 13px;font-size:12.5px;}
+    .nav .btn .long{display:none;}
+    .nav .btn .short{display:inline;}
+    .nav .logo i{width:24px;height:24px;border-radius:7px;font-size:11px;}
+    .nav .logo span{font-size:14px;}
+  }
+  @media (max-width:400px){
+    .steps{grid-template-columns:1fr;}
+    .ai-grid{grid-template-columns:1fr;}
+    .hero h1{letter-spacing:-.04em;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .js .reveal{opacity:1!important;transform:none!important;transition:none!important;transition-delay:0!important;}
+    .scroll-hint svg{animation:none;}
+    .btn,.stat,.step,.ai-card,.rule{transition:none!important;will-change:auto!important;}
+    .hero .wrap > *{animation:none!important;opacity:1!important;transform:none!important;}
+  }
+  /* 降低透明度偏好：玻璃材质转更实、去掉模糊，避免可读性下降 */
+  @media (prefers-reduced-transparency:reduce){
+    .nav{background:rgba(15,7,32,.94);-webkit-backdrop-filter:none;backdrop-filter:none;}
+    .step,.rule,.stat,.ai-card{background:rgba(255,255,255,.10);-webkit-backdrop-filter:none;backdrop-filter:none;}
+    .ambient{opacity:.45;}
+  }
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+<div class="ambient" aria-hidden="true"></div>
+
+<!-- ============ Nav ============ -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="logo" href="/"><i>我</i><span>我ai学习</span></a>
+    <div class="links">
+      <a class="txt" href="#why">为什么</a>
+      <a class="txt" href="#how">怎么用</a>
+      <a class="txt" href="guide.html">手册</a>
+      <a class="btn btn-primary" href="app"><span class="long">立即进入</span><span class="short">进入</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ Hero ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span>2026 考研 · 专硕 095131 农艺与种业</div>
+
+    <h1 class="grad">我ai学习</h1>
+
+    <p class="claim">把科学记忆法，<br>装进一个网页。</p>
+
+    <p class="sub">不用下载，不用注册，不用联网。<br>打开就知道——今天该学什么。</p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="app">立即开始学习 →</a>
+      <a class="btn btn-ghost" href="guide.html">快速上手手册</a>
+    </div>
+
+    <div class="spec-strip">
+      <div class="s"><div class="n">207</div><div class="l">覆盖知识点</div></div>
+      <div class="s"><div class="n">90<em>天</em></div><div class="l">备考计划</div></div>
+      <div class="s"><div class="n">4<em>门</em></div><div class="l">目标科目</div></div>
+      <div class="s"><div class="n">0</div><div class="l">数据上传</div></div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>SCROLL</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+</header>
+
+<!-- ============ Numbers ============ -->
+<section class="band-dark">
+  <div class="wrap center">
+    <div class="eyebrow reveal">一次说清楚</div>
+    <h2 class="headline reveal">数据，比形容词更有说服力</h2>
+    <p class="subline reveal">没有堆砌功能清单。下面四个数字，就是它的全部承诺。</p>
+
+    <div class="stat-grid">
+      <div class="stat reveal"><div class="n">207</div><div class="l">知识点</div><div class="d">四门科目全覆盖</div></div>
+      <div class="stat reveal"><div class="n">90<em>天</em></div><div class="l">备考周期</div><div class="d">基础 · 强化 · 冲刺</div></div>
+      <div class="stat reveal"><div class="n">5<em>档</em></div><div class="l">掌握度</div><div class="d">薄弱项自动排前</div></div>
+      <div class="stat reveal"><div class="n">0</div><div class="l">台服务器</div><div class="d">数据不出这台设备</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Pillars ============ -->
+<section id="why" class="band-light">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">核心卖点</div>
+      <h2 class="headline reveal">三件事，只做到极致</h2>
+      <p class="subline reveal" style="max-width:32em;margin-left:auto;margin-right:auto;">本地化、定制化、轻量化——每一条都不是形容词，是可以验证的事实。</p>
+    </div>
+
+    <div class="pillar reveal">
+      <div class="no">01<small>本地化</small></div>
+      <div>
+        <h3>你的数据，<span class="hl">一步都不出这台设备</span></h3>
+        <p>全部学习记录存在浏览器本地，不注册、不上云、不经过任何服务器。断网能学，关掉网页也不丢。想换手机？一键导出 JSON，导入即恢复。</p>
+        <div class="chips"><span>零账号</span><span>零上传</span><span>离线可用</span><span>JSON 备份</span></div>
+      </div>
+    </div>
+
+    <div class="pillar reveal">
+      <div class="no">02<small>定制化</small></div>
+      <div>
+        <h3>不是通用题库，<span class="hl">是为一个专业搭的系统</span></h3>
+        <p>科目锁定专硕 095131 农艺与种业（作物方向）。政治、英语、农综一二，每门都按真实考纲切分成可执行的知识点，并铺进 90 天的日程里。</p>
+        <div class="chips"><span>095131 专属</span><span>4 门科目</span><span>90 天日程</span><span>按学科出题</span></div>
+      </div>
+    </div>
+
+    <div class="pillar reveal">
+      <div class="no">03<small>轻量化</small></div>
+      <div>
+        <h3>一个网页文件，<span class="hl">就是全部</span></h3>
+        <p>没有框架，没有安装包，没有开屏广告。加到主屏幕后与原生 App 无异——点开即用，秒级启动，永远不会提示你「有新版本待更新」。</p>
+        <div class="chips"><span>零安装</span><span>秒开</span><span>无广告</span><span>可加主屏</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Quote / AI ============ -->
+<section class="quote">
+  <div class="wrap">
+    <div class="eyebrow reveal">AI 讲题</div>
+    <p class="big reveal">不止告诉你答案，<br><span class="grad">还教你怎么想。</span></p>
+    <p class="note reveal">一键生成按学科适配的讲解提示词。同一个「不会」，四门科目给你四种拆解方式。</p>
+
+    <div class="ai-grid">
+      <div class="ai-card reveal"><div class="k">政治</div><div class="v">画概念关系图，理清原理与结论的推导链</div></div>
+      <div class="ai-card reveal"><div class="k">英语</div><div class="v">拆长难句成分，逐层还原句子骨架</div></div>
+      <div class="ai-card reveal"><div class="k">农综一</div><div class="v">画遗传关系图，配比与性状一步步推</div></div>
+      <div class="ai-card reveal"><div class="k">农综二</div><div class="v">结合田间实例，把机理讲成能记住的场景</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Memory curve ============ -->
+<section class="band-cream">
+  <div class="wrap center">
+    <div class="eyebrow reveal">复习引擎</div>
+    <h2 class="headline reveal">在你<span class="hl">快要忘记</span>的那一刻，<br>把它推回你面前</h2>
+    <p class="subline reveal" style="max-width:33em;margin-left:auto;margin-right:auto;">
+      艾宾浩斯遗忘曲线自动排期。你不需要记「哪天该复习什么」——闯关通过的那一刻，下次复习时间就已经排好了。答错则自动降级、提前重排，薄弱项永远排在最前面。
+    </p>
+    <div class="chips" style="justify-content:center;">
+      <span>自动排期</span><span>薄弱优先</span><span>闯关校验</span><span>连胜加成</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Steps ============ -->
+<section id="how" class="band-light">
+  <div class="wrap center">
+    <div class="eyebrow reveal">四步上手</div>
+    <h2 class="headline reveal">从打开到开始学，<br>不超过一分钟</h2>
+    <p class="subline reveal" style="max-width:30em;margin-left:auto;margin-right:auto;">没有引导流程，没有配置项。真的就是打开、看、学。</p>
+
+    <div class="steps">
+      <div class="step reveal"><div class="num">01</div><h4>打开网页</h4><p>访问后一键「添加到主屏幕」。</p></div>
+      <div class="step reveal"><div class="num">02</div><h4>看今日</h4><p>首页直接列出今天该学的内容。</p></div>
+      <div class="step reveal"><div class="num">03</div><h4>学完闯关</h4><p>5 题答对 4 题，才算真掌握。</p></div>
+      <div class="step reveal"><div class="num">04</div><h4>按时复习</h4><p>到期自动推送，无需自己安排。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Rules（次要信息，收敛展示） ============ -->
+<section class="band-cream">
+  <div class="wrap center">
+    <div class="eyebrow reveal">打卡规则</div>
+    <h2 class="headline reveal">简单，但不放水</h2>
+    <p class="subline reveal" style="max-width:30em;margin-left:auto;margin-right:auto;">当天任务全部完成即打卡成功。漏了可以补，但必须先学完。</p>
+
+    <div class="rules">
+      <div class="rule reveal">
+        <div class="t">每日打卡</div>
+        <div class="b">把<b>当日全部任务对应的知识点</b>闯关通过，这一天自动标记为「已打卡」。</div>
+      </div>
+      <div class="rule reveal">
+        <div class="t mint">连续加成</div>
+        <div class="b">连胜 <b>≥ 3 天</b>后，每日打卡奖励享受 <b>1.5 倍</b>积分加成。</div>
+      </div>
+      <div class="rule reveal">
+        <div class="t amber">补卡机制</div>
+        <div class="b"><b>每天限补一次</b>。必须先完成当日任务，补卡发放<b>正常积分的一半</b>。</div>
+      </div>
+      <div class="rule reveal">
+        <div class="t ink">防划水</div>
+        <div class="b">闯关<b>两次未通过</b>不记掌握并扣 <b>20 分</b>。这是护栏，不是惩罚。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Footer CTA ============ -->
+<section class="foot">
+  <div class="wrap">
+    <div class="eyebrow reveal">现在开始</div>
+    <h2 class="display reveal">90 天，<br>从 8 月 2 日开跑</h2>
+    <p class="subline reveal">一个网页，装下你的整个备考节奏。</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="app">立即开始学习 →</a>
+      <a class="btn btn-ghost" href="guide.html">先看看手册</a>
+    </div>
+    <p class="foot-note">
+      我ai学习 · 专硕 095131 农艺与种业（作物方向）· 2026 考研备考工作台<br>
+      本地数据 · 离线可用 · 无账号 · 无广告 &nbsp;|&nbsp; <a href="app">study.ninkoro.com/app</a>
+    </p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  function showAll(){ for(var i=0;i<els.length;i++) els[i].classList.add('in'); }
+  if(!('IntersectionObserver' in window) ||
+     (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    showAll(); return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    for(var i=0;i<entries.length;i++){
+      var t=entries[i].target;
+      if(entries[i].isIntersecting){
+        // 同一容器内按文档顺序级联延迟，制造「成片载入」的连贯节奏（统一缓动语言）
+        var p=t.parentElement, sibs=p?p.querySelectorAll('.reveal'):null, idx=0;
+        if(sibs){for(var j=0;j<sibs.length;j++){if(sibs[j]===t){idx=j;break;}}}
+        t.style.transitionDelay=(Math.min(idx,8)*60)+'ms';
+        t.classList.add('in');
+        io.unobserve(t);
+      }
+    }
+  }, {rootMargin:'0px 0px -8% 0px', threshold:0.01});
+  for(var i=0;i<els.length;i++) io.observe(els[i]);
+  // 兜底：3s 后无论如何全部显示，避免任何环境下内容不可见
+  setTimeout(showAll, 3000);
+})();
+</script>
+
+</body>
+</html>
