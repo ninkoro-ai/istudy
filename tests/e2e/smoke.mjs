@@ -32,6 +32,11 @@ try {
   const dayTag = await page.textContent('#dayTag');
   assert.match(dayTag, /第 \d+ 天/);
   await page.waitForSelector('#todayTasks .kp.compact');
+  // 首次进入会弹出「专注提醒」，先关闭再操作
+  const prep = await page.$('#prepOverlay');
+  if (prep && await prep.isVisible()) {
+    await page.click('#prepOverlay [data-act="closePrep"]');
+  }
 
   // 题库页
   await page.click('.tabbar .tb[data-page="kp"]');
