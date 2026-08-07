@@ -18,6 +18,18 @@ const KP_LIB = readData('kp.json');
 const PLAN = readData('plan.json');
 const QUIZ = readData('quiz.json');
 const QUIZ_EXTRA = readData('quiz-extra.json');
+const KP_EXTRA = readData('kp-extra.json');
+
+// 合并知识点补充（kp-extra.json）
+for (const sub of Object.keys(KP_EXTRA)) {
+  if (!KP_LIB[sub]) KP_LIB[sub] = [];
+  const ids = new Set(KP_LIB[sub].map((k) => k.id));
+  for (const k of KP_EXTRA[sub]) {
+    if (ids.has(k.id)) errors.push(`kp-extra.json 与 kp.json 知识点 id 重复：${sub}:${k.id}`);
+    ids.add(k.id);
+    KP_LIB[sub].push(k);
+  }
+}
 
 // 合并手写题库补充（quiz-extra.json）
 for (const sub of Object.keys(QUIZ_EXTRA)) {

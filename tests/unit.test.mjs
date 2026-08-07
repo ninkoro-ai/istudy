@@ -84,12 +84,12 @@ const addRec = loadFn('addRec');
 const SUBJECTS = [{ id: 's1' }, { id: 's2' }];
 const KP_LIB = {
   s1: [
-    { id: 'a1', t: '知识点A', b: '事实甲是核心内容；事实乙也是核心内容；事实丙同样很关键。' },
-    { id: 'a2', t: '知识点B', b: '其它事实一也很重要；其它事实二同样重要；其它事实三不能忽略。' },
-    { id: 'a3', t: '知识点C', b: '别的事实一值得记住；别的事实二值得记住；别的事实三值得记住。' }
+    { id: 'a1', t: '知识点A', b: '事实甲是核心内容；事实乙也是核心内容；事实丙同样是重点；事实丁是重要补充；事实戊是延伸考点；事实己是易错辨析。' },
+    { id: 'a2', t: '知识点B', b: '其它事实一是基本内容；其它事实二也是基本内容；其它事实三是补充内容；其它事实四是重点内容。' },
+    { id: 'a3', t: '知识点C', b: '别的事实一是参考依据；别的事实二是判断标准；别的事实三是最终结论。' }
   ],
   s2: [
-    { id: 'b1', t: '科目二知识点', b: '跨科目事实一是重点；跨科目事实二是重点；跨科目事实三是重点。' }
+    { id: 'b1', t: '科目二知识点', b: '跨科目事实一是重点内容；跨科目事实二是次要内容；跨科目事实三是补充内容。' }
   ]
 };
 
@@ -221,7 +221,7 @@ test('startDay 缺失时默认 2026-08-02（8/2 开跑），已有值保留', ()
   assert.equal(s3.startDay, '2027-01-01');
 });
 
-test('genQuiz 生成两套题，题型覆盖“属于/正确/错误”', () => {
+test('genQuiz 生成两套题，题型覆盖属于/正确/错误/判断/填空/术语', () => {
   const sets = genQuiz('s1', 'a1');
   assert.ok(Array.isArray(sets) && sets.length === 2);
   const qs = sets[0].concat(sets[1]);
@@ -230,8 +230,11 @@ test('genQuiz 生成两套题，题型覆盖“属于/正确/错误”', () => {
   assert.ok([...types].some((q) => q.includes('属于')));
   assert.ok([...types].some((q) => q.includes('正确的是')));
   assert.ok([...types].some((q) => q.includes('错误的是')));
+  assert.ok([...types].some((q) => q.includes('判断')));
+  assert.ok([...types].some((q) => q.includes('填空')));
+  assert.ok([...types].some((q) => q.includes('术语解释')));
   for (const q of qs) {
-    assert.equal(q.opts.length, 4);
+    assert.ok(q.opts.length >= 2 && q.opts.length <= 4);
     assert.ok(q.ans >= 0 && q.ans <= 3);
   }
 });

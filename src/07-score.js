@@ -41,6 +41,14 @@
     var pool = sameChap.length>=3 ? sameChap : (sameSub.length>=3 ? sameSub : cross);
     pool=uniqArr(pool);
     if(pool.length<3) return null;
+    // 术语解释选项池：其它知识点的完整正文
+    var bodyPool=[];
+    for(var i=0;i<lib.length;i++){ if(lib[i].id===kid) continue; bodyPool.push(lib[i].b); }
+    for(var s=0;s<SUBJECTS.length;s++){
+      var arr2=KP_LIB[SUBJECTS[s].id];
+      for(var i=0;i<arr2.length;i++){ if(SUBJECTS[s].id===sub) continue; bodyPool.push(arr2[i].b); }
+    }
+    bodyPool=uniqArr(bodyPool);
     var sets=[];
     for(var sIdx=0;sIdx<2;sIdx++){
       var rng=seededRand(hashStr(sub+"|"+kid+"|"+sIdx));
@@ -50,7 +58,9 @@
         var ci=qIdx[q]; var correct=facts[ci];
         var others=uniqArr(shuffle(pool.slice(),rng)).slice(0,3);
         var opts, ans, qText, exp;
-        var tpl=q%4;
+        // 两套题分别覆盖：属于/正确/填空/判断/术语 与 错误/数值/判断/填空/正确
+        var tplSeq=(sIdx===0)?[0,1,5,4,6]:[2,3,4,5,1];
+        var tpl=tplSeq[q%5];
         if(tpl===3){
           // 数值题：正确事实含数字时，选项为各事实中的关键数字/年份
           var nums=uniqArr(facts.map(numOf).filter(Boolean));
@@ -67,6 +77,46 @@
             }
           }
           tpl=0;
+        }
+        if(tpl===4){
+          // 判断题：对/错
+          var stmt=(q%2===0)?correct:others[0];
+          opts=["正确","错误"];
+          ans=(stmt===correct)?0:1;
+          qText="判断：「"+stmt+"」";
+          exp=(stmt===correct)?("表述正确。"):("表述错误，正确表述为："+correct);
+          qs.push({q:qText,opts:opts,ans:ans,exp:exp});
+          continue;
+        }
+        if(tpl===5){
+          // 填空题：正文含「是」时挖空
+          var bi=correct.lastIndexOf("是");
+          if(bi>0 && correct.length-bi-1>=2){
+            var head=correct.slice(0,bi+1), tail=correct.slice(bi+1);
+            var tails=uniqArr(pool.map(function(p){
+              var i2=p.lastIndexOf("是");
+              return i2>0?p.slice(i2+1):"";
+            }).filter(function(x){ return x.length>=2; }));
+            if(tails.length>=3){
+              opts=uniqArr(shuffle([tail].concat(tails.slice(0,3)),rng));
+              ans=opts.indexOf(tail);
+              qText="「"+kp.t+"」填空："+head+"____";
+              exp="正确答案："+tail+"（完整表述："+correct+"）";
+              qs.push({q:qText,opts:opts,ans:ans,exp:exp});
+              continue;
+            }
+          }
+          tpl=0;
+        }
+        if(tpl===6){
+          // 术语解释：选择正确释义
+          var defs=uniqArr(shuffle([kp.b].concat(bodyPool.slice(0,3)),rng));
+          opts=defs;
+          ans=opts.indexOf(kp.b);
+          qText="术语解释：「"+kp.t+"」的正确释义是？";
+          exp="正确答案："+kp.b;
+          qs.push({q:qText,opts:opts,ans:ans,exp:exp});
+          continue;
         }
         if(tpl===2 && facts.length>=3){
           // 错误选项题：把“别的知识点的事实”伪装成该知识点内容，其余为正确事实
