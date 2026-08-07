@@ -1,681 +1,601 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0F0720">
-<meta name="description" content="我ai学习 —— 专为 2026 考研专硕 095131 农艺与种业打造的 AI 备考工作台。273 个知识点、90 天计划、艾宾浩斯自动复习，数据全部留在本机。打开网页即开即学。">
+<meta name="theme-color" content="#FFF8F2">
+<meta name="description" content="我ai学习 —— 专为 2026 考研专硕 095131 农艺与种业打造的 AI 备考工作台。273 个知识点（按 2026 考试大纲校准）、90 天计划、艾宾浩斯自动复习，数据全部留在本机。打开网页即开即学。" />
 <title>我ai学习 · 2026 考研备考工作台</title>
+<script>document.documentElement.classList.add('js');</script>
 <style>
   :root{
-    --coral:#FF6B8A; --coral-d:#E8557A; --coral-2:#FF8FA8;
-    --gold:#FFD08A;
-    --mint:#7FC8A9; --mint-d:#2E7D52;
-    --amber:#E9A23B;
-
-    --ink:#15110F; --ink-2:#5F544E; --ink-3:#9A8E88;
-    --cream:#FFF8F2;
-    --line:#EFE3DC;
-
-    --stage:#1C1330; --stage-2:#281B40; --stage-3:#382A52;
-    --on-dark:#FFFFFF;
-    --on-dark-2:rgba(255,255,255,.66);
-    --on-dark-3:rgba(255,255,255,.40);
-    --hairline:rgba(255,255,255,.10);
-
-    --maxw:1180px;
-    --gut:clamp(18px,4.4vw,32px);
-    --sec-y:clamp(72px,11vw,132px);
-    --ease:cubic-bezier(.22,1,.36,1);
-    /* 统一动效时长体系：按压最利落、悬浮/载入居中，全部共用 --ease 单一缓动语言 */
-    --dur-press:.14s;
-    --dur-hover:.34s;
-    --dur-reveal:.64s;
-    --nav-h:60px;
+    --brand:#E8557A;
+    --brand-strong:#C2365B;
+    --brand-soft:#FFE5EC;
+    --accent:#FF6B8A;
+    --accent-2:#FF8FA8;
+    --cream:#FAF7F3;
+    --surface:#FFFDFA;
+    --text:#211610;
+    --muted:#7C6A5D;
+    --border:#EFE3DC;
+    --shadow:0 22px 48px -30px rgba(120,30,50,.22);
+    --radius:18px;
+    --nav-h:64px;
+    --maxw:1080px;
   }
-
-  *{box-sizing:border-box;}
-  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
-  html,body{margin:0;padding:0;}
+  @media (prefers-color-scheme: dark){
+    :root{
+      --brand:#FF7B9C;
+      --brand-strong:#FFA3BC;
+      --brand-soft:rgba(255,123,156,.16);
+      --accent:#FF6B8A;
+      --accent-2:#FF8FA8;
+      --cream:#100C0A;
+      --surface:#1B1511;
+      --text:#F6EDE5;
+      --muted:#B9A79C;
+      --border:#332A22;
+      --shadow:0 18px 40px -22px rgba(0,0,0,.8);
+    }
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-    color:var(--on-dark);
-    /* 整页单一演化背景：随滚动从最深到最浓再落回深，模块不再各自上色 */
-    background:linear-gradient(180deg,
-      #0F0720 0%,
-      #160B2E 8%,
-      #1E103D 20%,
-      #271248 33%,
-      #322056 46%,
-      #3D1A63 58%,
-      #492172 70%,
-      #5B267A 82%,
-      #52206F 92%,
-      #3D1852 100%);
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  /* 固定环境光层：贯穿全页的柔光团，稳定被照亮的空间（无动画、不影响阅读） */
-  .ambient{
-    position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
-    background:
-      radial-gradient(40vw 40vw at 14% 16%, rgba(255,107,138,.14), transparent 62%),
-      radial-gradient(34vw 34vw at 86% 26%, rgba(127,200,169,.09), transparent 62%),
-      radial-gradient(48vw 48vw at 50% 58%, rgba(255,208,138,.08), transparent 64%),
-      radial-gradient(46vw 46vw at 72% 92%, rgba(123,62,110,.20), transparent 66%);
-  }
-  img,svg{display:block;max-width:100%;}
-  a{color:inherit;text-decoration:none;}
-  ::selection{background:var(--coral);color:#fff;}
-
-  .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding-left:var(--gut);padding-right:var(--gut);}
-  section{padding:var(--sec-y) 0;}
-  .center{text-align:center;}
-
-  /* ============ Typography scale (发布会式) ============ */
-  .eyebrow{
-    display:inline-block;
-    font-size:clamp(11px,1.5vw,13px);font-weight:800;
-    letter-spacing:.22em;text-transform:uppercase;
-    color:var(--coral);margin-bottom:clamp(12px,2vw,18px);
-  }
-  .display{
-    font-size:clamp(32px,7.2vw,72px);
-    font-weight:900;letter-spacing:-.035em;line-height:1.06;
-    margin:0;overflow-wrap:break-word;
-  }
-  .headline{
-    font-size:clamp(26px,5.4vw,52px);
-    font-weight:900;letter-spacing:-.03em;line-height:1.14;
-    margin:0;overflow-wrap:break-word;
-  }
-  .subline{
-    font-size:clamp(14.5px,2.1vw,19px);
-    line-height:1.75;margin:clamp(14px,2.4vw,22px) 0 0;
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--cream);
+    color:var(--text);
+    line-height:1.7;
     overflow-wrap:break-word;
+    -webkit-font-smoothing:antialiased;
   }
-  .grad{
-    background:linear-gradient(104deg,#FF8FA8 0%,#FF6B8A 42%,var(--gold) 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
+  img,video{max-width:100%;height:auto;display:block;}
+  a{color:var(--brand);text-decoration:none;}
+  section[id]{scroll-margin-top:calc(var(--nav-h) + 12px);}
+  .container{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 20px;}
+  .section{padding:64px 0;}
+  @media (min-width:900px){.section{padding:92px 0;}}
+  .section-alt{background:var(--surface);}
+  .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--brand);font-weight:700;font-size:13px;
+    letter-spacing:.16em;text-transform:uppercase;margin:0 0 12px;
   }
-  .hl{color:var(--coral);}
+  .kicker::after{content:'';width:34px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--brand),var(--accent-2));}
+  h1,h2,h3,h4{margin:0 0 12px;line-height:1.25;letter-spacing:-.01em;}
+  h1{font-size:clamp(38px,8.6vw,58px);font-weight:900;margin-bottom:8px;}
+  h2{font-size:clamp(28px,6.4vw,42px);font-weight:900;}
+  h3{font-size:20px;font-weight:800;}
+  p{margin:0 0 14px;}
+  .lead{color:var(--muted);font-size:17px;}
+  .center{text-align:center;}
+  .muted{color:var(--muted);}
+  .gradient-text{background:linear-gradient(90deg,var(--brand),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .brand-gradient{background:linear-gradient(135deg,var(--brand),var(--accent-2));}
 
-  /* ============ Buttons ============ */
   .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    font-size:clamp(15px,1.8vw,16.5px);font-weight:800;
-    padding:clamp(14px,2.2vw,17px) clamp(24px,4vw,34px);
-    border-radius:999px;border:1px solid transparent;
-    transition:transform var(--dur-press) var(--ease),box-shadow var(--dur-hover) var(--ease),background-color var(--dur-hover) var(--ease),border-color var(--dur-hover) var(--ease);
-    cursor:pointer;white-space:nowrap;line-height:1.2;
-    will-change:transform;
-  }
-  /* 按压即时反馈：pointer-down 即响应，且用同一缓动语言 */
-  .btn:active{transform:scale(.96);transition-duration:var(--dur-press);}
-  .btn:focus-visible{outline:2px solid var(--coral-2);outline-offset:3px;}
-  .btn-primary{
-    background:linear-gradient(135deg,var(--coral-2),var(--coral));
-    color:#fff;box-shadow:0 14px 34px rgba(255,107,138,.40);
-  }
-  .btn-primary:hover{box-shadow:0 20px 44px rgba(255,107,138,.52);transform:translateY(-2px);}
-  .btn-ghost{background:rgba(255,255,255,.07);color:#fff;border-color:rgba(255,255,255,.26);}
-  .btn-ghost:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.44);}
-  .btn-dark{background:var(--ink);color:#fff;}
-  .btn-dark:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(0,0,0,.22);}
-
-  /* ============ Nav ============ */
-  .nav{
-    position:fixed;inset:0 0 auto 0;z-index:100;
-    background:rgba(15,7,32,.72);
-    -webkit-backdrop-filter:blur(14px) saturate(1.3);
-    backdrop-filter:blur(14px) saturate(1.3);
-    border-bottom:1px solid var(--hairline);
-  }
-  .nav .wrap{display:flex;justify-content:space-between;align-items:center;height:var(--nav-h);gap:12px;}
-  .nav .logo{display:flex;align-items:center;gap:9px;font-weight:900;color:#fff;font-size:clamp(15px,2.2vw,17px);letter-spacing:-.02em;}
-  .nav .logo i{
-    width:28px;height:28px;flex:none;border-radius:9px;
-    background:linear-gradient(135deg,var(--coral-2),var(--coral));
-    display:grid;place-items:center;font-size:13.5px;font-style:normal;color:#fff;font-weight:900;
-  }
-  .nav .links{display:flex;align-items:center;gap:clamp(14px,2.4vw,26px);}
-  .nav .links a.txt{color:var(--on-dark-2);font-size:14px;font-weight:600;transition:color .2s;}
-  .nav .links a.txt:hover{color:#fff;}
-  .nav .btn{padding:9px 18px;font-size:13.5px;box-shadow:0 6px 18px rgba(255,107,138,.34);}
-  .nav .btn .short{display:none;}
-
-  /* ============ Hero ============ */
-  .hero{
-    position:relative;isolation:isolate;
-    min-height:100svh;
-    display:flex;align-items:center;
-    padding:calc(var(--nav-h) + clamp(48px,10vw,90px)) 0 clamp(44px,8vw,80px);
-    color:#fff;
-    overflow:hidden;
+    min-height:46px;padding:12px 22px;border-radius:12px;
+    font-weight:700;font-size:15px;line-height:1.2;
+    border:2px solid transparent;cursor:pointer;
+    transition:transform .2s ease,box-shadow .2s ease,background .2s ease,color .2s ease,border-color .2s ease;
     text-align:center;
   }
-  .hero::before{
-    content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-    background:
-      radial-gradient(44% 34% at 16% 24%, rgba(255,107,138,.26), transparent 64%),
-      radial-gradient(40% 30% at 86% 22%, rgba(127,200,169,.16), transparent 64%),
-      radial-gradient(52% 40% at 50% 108%, rgba(255,208,138,.13), transparent 66%);
-  }
-  .hero .badge{
-    display:inline-flex;align-items:center;gap:9px;
-    padding:7px 15px;border-radius:999px;
-    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);
-    font-size:clamp(11.5px,1.7vw,13px);font-weight:700;letter-spacing:.06em;
-    color:#fff;margin-bottom:clamp(20px,3.4vw,30px);
-    max-width:100%;
-  }
-  .hero .badge .dot{
-    width:7px;height:7px;flex:none;border-radius:99px;background:var(--mint);
-    box-shadow:0 0 10px var(--mint);
-  }
-  .hero h1{
-    font-size:clamp(46px,12vw,116px);
-    font-weight:900;letter-spacing:-.05em;line-height:.94;margin:0;
-  }
-  .hero .claim{
-    font-size:clamp(19px,4.2vw,40px);
-    font-weight:850;letter-spacing:-.02em;line-height:1.28;
-    margin:clamp(18px,3vw,28px) auto 0;max-width:18em;
-    color:#fff;overflow-wrap:break-word;
-  }
-  .hero .sub{
-    font-size:clamp(14px,2.1vw,18px);
-    color:var(--on-dark-2);line-height:1.72;
-    margin:clamp(12px,2vw,18px) auto 0;max-width:34em;
-    overflow-wrap:break-word;
-  }
-  .hero .actions{
-    display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
-    margin-top:clamp(26px,4.4vw,40px);
-  }
-  .hero .actions .btn{flex:0 1 auto;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--brand);color:#fff;box-shadow:0 10px 22px -10px rgba(232,85,122,.7);}
+  .btn-primary:hover{background:var(--brand-strong);}
+  .btn-ghost{border-color:var(--border);color:var(--text);background:transparent;}
+  .btn-ghost:hover{border-color:var(--brand);color:var(--brand);}
+  .btn-block{width:100%;}
 
-  /* Hero spec strip */
-  .spec-strip{
-    display:grid;grid-template-columns:repeat(4,1fr);
-    gap:clamp(10px,2vw,18px);
-    margin-top:clamp(34px,5.6vw,58px);
-    padding-top:clamp(22px,3.4vw,32px);
-    border-top:1px solid;
-    border-image:linear-gradient(90deg,transparent,var(--hairline),transparent) 1;
-  }
-  .spec-strip .s{min-width:0;}
-  .spec-strip .n{
-    font-size:clamp(22px,4.6vw,40px);font-weight:900;letter-spacing:-.03em;
-    line-height:1.05;color:#fff;
-  }
-  .spec-strip .n em{font-style:normal;font-size:.5em;font-weight:800;margin-left:2px;color:var(--on-dark-2);}
-  .spec-strip .l{
-    font-size:clamp(10.5px,1.6vw,13px);color:var(--on-dark-3);
-    margin-top:6px;font-weight:600;letter-spacing:.04em;
-    overflow-wrap:break-word;
-  }
-  .scroll-hint{
-    margin-top:clamp(26px,4vw,42px);
-    color:var(--on-dark-3);font-size:12px;letter-spacing:.16em;font-weight:700;
-    display:flex;flex-direction:column;align-items:center;gap:8px;
-  }
-  .scroll-hint svg{opacity:.6;animation:bob 2.1s var(--ease) infinite;}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;line-height:1.2;}
+  .chip-brand{background:var(--brand);color:#fff;}
+  .chip-soft{background:var(--brand-soft);color:var(--brand);}
+  .chip-outline{border:1px solid var(--border);color:var(--muted);}
 
-  /* 首屏载入序列：统一缓动 + 同向上升，制造「元素依次载入」的连贯节奏 */
-  @keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
-  .hero .wrap > *{animation:heroIn var(--dur-reveal) var(--ease) both;}
-  .hero .wrap > *:nth-child(1){animation-delay:.04s}
-  .hero .wrap > *:nth-child(2){animation-delay:.12s}
-  .hero .wrap > *:nth-child(3){animation-delay:.20s}
-  .hero .wrap > *:nth-child(4){animation-delay:.28s}
-  .hero .wrap > *:nth-child(5){animation-delay:.36s}
-  .hero .wrap > *:nth-child(6){animation-delay:.44s}
-  .hero .wrap > *:nth-child(7){animation-delay:.52s}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:26px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--brand);}
+  @media (min-width:900px){.card{padding:30px;}}
+  .grid{display:grid;gap:20px;}
+  .grid-2{grid-template-columns:1fr;}
+  .grid-3{grid-template-columns:1fr;}
+  @media (min-width:700px){.grid-2{grid-template-columns:repeat(2,1fr);}}
+  @media (min-width:920px){.grid-3{grid-template-columns:repeat(3,1fr);}}
 
-  /* ============ Numbers band ============ */
-  .band-dark{
-    position:relative;isolation:isolate;
-    background:transparent;
-    color:#fff;
+  /* ===== Nav ===== */
+  .nav{
+    position:sticky;top:0;z-index:50;height:var(--nav-h);
+    background:color-mix(in srgb,var(--cream) 86%,transparent);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid var(--border);
   }
-  /* 过渡光晕：Hero 底部 → 数字墙，珊瑚粉柔光融入 */
-  .band-dark::before{
-    content:"";position:absolute;left:0;right:0;top:-130px;height:clamp(160px,22vw,300px);
-    z-index:-1;pointer-events:none;
-    background:radial-gradient(60% 100% at 50% 100%, rgba(255,107,138,.12), transparent 70%);
+  .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .nav-brand{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:18px;color:var(--text);}
+  .nav-logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:16px;}
+  .nav-links{display:none;align-items:center;gap:22px;font-size:14px;font-weight:600;color:var(--muted);}
+  .nav-links a:hover{color:var(--brand);}
+  .nav-cta{display:none;}
+  .nav-burger{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:44px;height:44px;border-radius:10px;border:1px solid var(--border);
+    background:var(--surface);cursor:pointer;color:var(--text);
   }
-  .band-dark .headline{color:#fff;}
-  .band-dark .subline{color:var(--on-dark-2);}
+  .nav-panel{
+    display:none;position:fixed;top:var(--nav-h);left:0;right:0;z-index:49;
+    background:var(--surface);border-bottom:1px solid var(--border);
+    padding:12px 20px 20px;box-shadow:var(--shadow);
+  }
+  .nav-panel.open{display:block;}
+  .nav-panel a{display:block;padding:13px 4px;font-weight:600;font-size:15px;color:var(--text);border-bottom:1px solid var(--border);}
+  .nav-panel a:last-child{border-bottom:0;}
+  .nav-panel a:hover{color:var(--brand);}
+  .nav-panel .btn{margin-top:14px;}
+  @media (min-width:900px){
+    .nav-links{display:flex;}
+    .nav-cta{display:inline-flex;}
+    .nav-burger{display:none;}
+    .nav-panel{display:none !important;}
+  }
 
-  .stat-grid{
-    display:grid;grid-template-columns:repeat(4,1fr);
-    gap:clamp(14px,2.6vw,26px);
-    margin-top:clamp(34px,5.4vw,58px);
+  /* ===== Hero ===== */
+  .hero{position:relative;padding:52px 0 72px;overflow:hidden;}
+  .hero::before,.hero::after{
+    content:'';position:absolute;border-radius:50%;
+    background:var(--brand);opacity:.07;filter:blur(70px);pointer-events:none;
   }
-  .stat{
-    padding:clamp(20px,3.2vw,30px) clamp(12px,2vw,20px);
-    border:1px solid var(--hairline);border-radius:20px;
-    background:rgba(255,255,255,.032);
-    text-align:center;min-width:0;
-    transition:border-color var(--dur-hover) var(--ease),background-color var(--dur-hover) var(--ease),transform var(--dur-hover) var(--ease);
+  .hero::before{width:420px;height:420px;top:-120px;right:-140px;}
+  .hero::after{width:380px;height:380px;bottom:-140px;left:-160px;}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);font-size:13px;font-weight:700;margin-bottom:18px;
   }
-  .stat:hover{border-color:rgba(255,107,138,.42);background:rgba(255,107,138,.06);transform:translateY(-3px);}
-  .stat .n{
-    font-size:clamp(30px,6.4vw,58px);font-weight:900;letter-spacing:-.045em;line-height:1;
+  .hero-tagline{font-size:clamp(20px,4.4vw,27px);font-weight:800;color:var(--brand);margin-bottom:10px;}
+  .hero-position{font-size:clamp(16px,3.6vw,20px);font-weight:700;color:var(--muted);margin-bottom:16px;}
+  .hero-desc{max-width:560px;color:var(--muted);font-size:16px;}
+  .hero-chips{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 28px;}
+  .hero-ctas{display:flex;flex-direction:column;gap:12px;max-width:360px;}
+  @media (min-width:560px){.hero-ctas{flex-direction:row;max-width:none;}}
+  .hero-inner{display:grid;gap:44px;align-items:center;}
+  @media (min-width:900px){
+    .hero{padding:72px 0 96px;}
+    .hero-inner{grid-template-columns:1.04fr .96fr;gap:64px;}
+    .hero-desc{font-size:17px;}
+    .hero-position{font-size:20px;}
   }
-  .stat .n em{font-style:normal;font-size:.42em;font-weight:800;margin-left:3px;color:var(--on-dark-2);letter-spacing:0;}
-  .stat .l{margin-top:10px;font-size:clamp(12px,1.8vw,14.5px);color:var(--on-dark-2);font-weight:600;}
-  .stat .d{margin-top:4px;font-size:clamp(10.5px,1.5vw,12.5px);color:var(--on-dark-3);}
 
-  /* ============ Pillars (卖点分屏) ============ */
-  .band-light{background:transparent;color:#fff;}
-  .band-cream{background:transparent;color:#fff;}
-  .band-light .subline,.band-cream .subline{color:var(--on-dark-2);}
+  /* ===== 手机样机：真实 App 首页 ===== */
+  .phone{
+    width:min(100%,320px);margin:0 auto;border-radius:30px;padding:12px;
+    background:linear-gradient(160deg,#232326,#101013);
+    box-shadow:0 34px 80px -34px rgba(0,0,0,.5);
+  }
+  .phone-notch{width:88px;height:6px;border-radius:4px;background:#3a3a3e;margin:2px auto 10px;}
+  .phone-screen{border-radius:20px;background:#FFF8F2;color:#5A4A47;padding:12px 12px 10px;overflow:hidden;text-align:left;}
+  .ph-head{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid #F3DDC3;}
+  .ph-brand{display:flex;align-items:center;gap:6px;min-width:0;}
+  .ph-logo{width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,#FF6B8A,#FFB3C1);display:grid;place-items:center;color:#fff;font-size:12px;font-weight:900;}
+  .ph-brand b{font-size:12px;font-weight:800;color:#2B211A;white-space:nowrap;}
+  .ph-mid{flex:1;text-align:center;}
+  .ph-mid span{display:block;font-size:10px;font-weight:800;color:#E8557A;}
+  .ph-mid i{font-style:normal;font-size:8px;color:#8C7A75;}
+  .ph-user{font-size:9px;color:#8C7A75;white-space:nowrap;}
+  .ph-hero{background:linear-gradient(135deg,#FF6B8A,#E8557A);border-radius:14px;padding:12px;color:#fff;margin-top:10px;}
+  .ph-hero .tag{display:inline-block;font-size:8px;font-weight:700;background:rgba(255,255,255,.24);padding:2px 8px;border-radius:99px;margin-bottom:6px;}
+  .ph-hero h5{margin:0 0 4px;font-size:14px;font-weight:800;letter-spacing:-.01em;}
+  .ph-hero .sub{font-size:9px;opacity:.92;}
+  .ph-prog{height:8px;border-radius:99px;background:rgba(255,255,255,.28);margin:9px 0 10px;overflow:hidden;}
+  .ph-prog i{display:block;height:100%;width:38%;border-radius:99px;background:#fff;}
+  .ph-task{background:#fff;border:1px solid #F3DDC3;border-radius:12px;padding:9px 10px;margin-bottom:7px;}
+  .ph-task .t{display:flex;align-items:center;gap:6px;}
+  .ph-task .t i{font-style:normal;font-size:8px;font-weight:800;color:#E8305C;background:#FFE5EC;padding:1px 6px;border-radius:99px;}
+  .ph-task .t b{flex:1;font-size:11px;font-weight:700;color:#2B211A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ph-task .t em{font-style:normal;font-size:8px;color:#8C7A75;}
+  .ph-task .btn{display:inline-block;margin-top:6px;font-size:8px;font-weight:800;color:#E8557A;background:#FFE5EC;border-radius:8px;padding:3px 10px;}
+  .ph-nav{display:grid;grid-template-columns:repeat(5,1fr);margin-top:9px;border-top:1px solid #F3DDC3;padding-top:7px;text-align:center;font-size:8px;color:#8C7A75;}
+  .ph-nav b{color:#E8557A;}
+  .hero-visual-caption{text-align:center;font-size:12px;color:var(--muted);margin-top:14px;}
 
-  .pillar{
-    display:grid;grid-template-columns:minmax(0,.42fr) minmax(0,.58fr);
-    gap:clamp(22px,5vw,64px);align-items:center;
-    padding:clamp(38px,6vw,64px) 0;
-    border-bottom:1px solid;
-    border-image:linear-gradient(90deg,transparent,var(--hairline),transparent) 1;
-  }
-  .pillar:last-child{border-bottom:0;}
-  .pillar .no{
-    font-size:clamp(52px,13vw,132px);font-weight:900;letter-spacing:-.06em;line-height:.86;
-    background:linear-gradient(150deg,var(--coral-2),var(--coral) 55%,var(--gold));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    opacity:.92;
-  }
-  .pillar .no small{display:block;font-size:clamp(15px,2.4vw,22px);font-weight:900;letter-spacing:.04em;color:#fff;margin-top:clamp(6px,1.2vw,12px);-webkit-text-fill-color:#fff;}
-  .pillar h3{
-    font-size:clamp(21px,4.1vw,38px);font-weight:900;letter-spacing:-.028em;line-height:1.24;margin:0;
-    overflow-wrap:break-word;
-  }
-  .pillar p{
-    font-size:clamp(14px,1.95vw,17px);color:var(--on-dark-2);line-height:1.78;margin:clamp(10px,1.8vw,16px) 0 0;
-    overflow-wrap:break-word;
-  }
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:clamp(14px,2.2vw,20px);}
-  .chips span{
-    font-size:clamp(11.5px,1.6vw,13px);font-weight:700;color:var(--on-dark-2);
-    background:rgba(255,255,255,.07);border:1px solid var(--hairline);border-radius:999px;padding:7px 13px;
-  }
-  .band-light .chips span{background:rgba(255,255,255,.07);}
+  /* ===== Sections ===== */
+  .sec-head{margin-bottom:38px;}
+  .sec-head p{max-width:640px;}
+  .center .sec-head p{margin-left:auto;margin-right:auto;}
+  @media (min-width:900px){.sec-head{margin-bottom:52px;}}
 
-  /* ============ Quote (金句屏) ============ */
-  .quote{
-    position:relative;isolation:isolate;
-    background:transparent;
-    color:#fff;text-align:center;
-  }
-  /* 过渡光晕：核心卖点 → AI 讲题，暖金柔光融入 */
-  .quote::before{
-    content:"";position:absolute;left:0;right:0;top:-120px;height:clamp(160px,22vw,300px);
-    z-index:-1;pointer-events:none;
-    background:radial-gradient(56% 100% at 50% 100%, rgba(255,208,138,.12), transparent 70%);
-  }
-  .quote .big{
-    font-size:clamp(24px,5.8vw,58px);font-weight:900;letter-spacing:-.035em;line-height:1.22;
-    margin:0 auto;max-width:16em;overflow-wrap:break-word;
-  }
-  .quote .big .grad{display:inline;}
-  .quote .note{
-    margin:clamp(18px,3vw,28px) auto 0;max-width:34em;
-    color:var(--on-dark-2);font-size:clamp(14px,2vw,17.5px);line-height:1.75;
-    overflow-wrap:break-word;
-  }
-  .ai-grid{
-    display:grid;grid-template-columns:repeat(4,1fr);
-    gap:clamp(10px,2vw,16px);margin-top:clamp(30px,5vw,50px);
-  }
-  .ai-card{
-    border:1px solid var(--hairline);border-radius:18px;
-    background:rgba(255,255,255,.035);padding:clamp(16px,2.6vw,24px) clamp(12px,2vw,18px);
-    text-align:left;min-width:0;
-  }
-  .ai-card .k{font-size:clamp(13px,1.9vw,15.5px);font-weight:850;color:#fff;}
-  .ai-card .v{font-size:clamp(11.5px,1.7vw,13.5px);color:var(--on-dark-2);margin-top:6px;line-height:1.6;}
+  .stat-card{text-align:center;}
+  .stat-card .n{font-size:clamp(36px,6vw,52px);font-weight:900;line-height:1;color:var(--brand);letter-spacing:-.02em;}
+  .stat-card .l{font-size:13px;color:var(--muted);margin-top:6px;}
+  .stat-card .d{font-size:12px;color:var(--muted);opacity:.85;margin-top:2px;}
 
-  /* ============ Steps ============ */
-  .steps{
-    display:grid;grid-template-columns:repeat(4,1fr);
-    gap:clamp(12px,2.2vw,20px);margin-top:clamp(32px,5vw,52px);
-    counter-reset:st;
-  }
-  .step{
-    position:relative;min-width:0;color:var(--on-dark);
-    background:rgba(255,255,255,.05);border:1px solid var(--hairline);border-radius:20px;
-    padding:clamp(20px,3vw,28px) clamp(16px,2.4vw,22px);
-    transition:transform var(--dur-hover) var(--ease),box-shadow var(--dur-hover) var(--ease),background-color var(--dur-hover) var(--ease);
-  }
-  .step:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.28);background:rgba(255,255,255,.08);}
-  .step .num{
-    font-size:clamp(26px,4.4vw,40px);font-weight:900;letter-spacing:-.04em;line-height:1;
-    color:var(--coral);opacity:.5;
-  }
-  .step h4{margin:clamp(8px,1.4vw,12px) 0 6px;font-size:clamp(15px,2.1vw,18px);font-weight:850;letter-spacing:-.015em;color:#fff;}
-  .step p{margin:0;color:var(--on-dark-2);font-size:clamp(12.5px,1.7vw,14.5px);line-height:1.62;overflow-wrap:break-word;}
+  .feature{padding:22px;}
+  .feature .icon{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px;background:var(--brand-soft);color:var(--brand);}
+  .feature h4{font-size:17px;margin-bottom:8px;}
+  .feature p{font-size:14px;color:var(--muted);margin:0;}
+  .feature .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
 
-  /* ============ Rules (次要信息, 收敛) ============ */
-  .rules{
-    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:clamp(10px,1.8vw,14px);
-    max-width:920px;margin:clamp(30px,4.6vw,46px) auto 0;text-align:left;
-  }
-  .rule{
-    background:rgba(255,255,255,.05);border:1px solid var(--hairline);border-radius:16px;color:var(--on-dark);
-    padding:clamp(16px,2.4vw,20px) clamp(16px,2.4vw,22px);min-width:0;
-  }
-  .rule .t{
-    display:inline-flex;align-items:center;
-    font-size:12px;font-weight:850;color:#fff;letter-spacing:.03em;
-    background:linear-gradient(135deg,var(--coral),var(--coral-d));
-    border-radius:8px;padding:5px 11px;margin-bottom:10px;
-  }
-  .rule .t.mint{background:linear-gradient(135deg,var(--mint),var(--mint-d));}
-  .rule .t.amber{background:linear-gradient(135deg,var(--amber),#C9791B);}
-  .rule .t.ink{background:linear-gradient(135deg,#5F544E,#2A2320);}
-  .rule .b{font-size:clamp(13px,1.8vw,14.8px);color:var(--on-dark-2);line-height:1.68;overflow-wrap:break-word;}
-  .rule .b b{color:#fff;font-weight:800;}
+  .ai-grid{display:grid;gap:14px;grid-template-columns:1fr;margin-top:26px;}
+  @media (min-width:700px){.ai-grid{grid-template-columns:repeat(2,1fr);}}
+  .ai-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px;}
+  .ai-card:hover{border-color:var(--brand);}
+  .ai-card .k{display:inline-block;font-size:12px;font-weight:800;color:var(--brand);background:var(--brand-soft);border-radius:99px;padding:2px 10px;margin-bottom:8px;}
+  .ai-card .v{font-size:14px;color:var(--muted);margin:0;}
 
-  /* ============ Footer CTA ============ */
-  .foot{
-    position:relative;isolation:isolate;
-    background:transparent;
-    color:#fff;text-align:center;
-    padding:clamp(70px,11vw,130px) 0 clamp(40px,6vw,64px);
+  .step{position:relative;}
+  .step-num{
+    position:absolute;top:-18px;left:24px;width:40px;height:40px;border-radius:12px;
+    display:grid;place-items:center;color:#fff;font-weight:900;font-size:18px;box-shadow:0 8px 18px -8px rgba(232,85,122,.6);
   }
-  /* 过渡光晕：打卡规则 → 底部 CTA，珊瑚粉高潮柔光融入 */
-  .foot::before{
-    content:"";position:absolute;left:0;right:0;top:-100px;height:clamp(180px,26vw,340px);
-    z-index:-1;pointer-events:none;
-    background:radial-gradient(70% 100% at 50% 100%, rgba(255,107,138,.18), transparent 72%);
-  }
-  .foot .display{color:#fff;}
-  .foot .subline{color:var(--on-dark-2);margin-left:auto;margin-right:auto;max-width:30em;}
-  .foot .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:clamp(26px,4vw,38px);}
-  .foot-note{
-    color:var(--on-dark-3);font-size:clamp(11px,1.5vw,12.5px);
-    margin-top:clamp(34px,5vw,54px);padding-top:clamp(20px,3vw,28px);
-    border-top:1px solid;
-    border-image:linear-gradient(90deg,transparent,var(--hairline),transparent) 1;line-height:1.8;
-    padding-bottom:env(safe-area-inset-bottom);
-  }
-  .foot-note a{color:var(--on-dark-2);text-decoration:underline;text-underline-offset:3px;}
+  .step h3{margin-top:34px;}
+  .step p{font-size:14px;color:var(--muted);margin:0;}
 
-  /* ============ Reveal (渐入, 无 JS 时默认可见) ============ */
-  .js .reveal{opacity:0;transform:translateY(18px) scale(.985);}
-  .js .reveal.in{opacity:1;transform:none;transition:opacity var(--dur-reveal) var(--ease),transform var(--dur-reveal) var(--ease);will-change:transform,opacity;}
+  .rule{border-left:3px solid var(--brand);padding:4px 0 4px 16px;margin-bottom:18px;}
+  .rule .t{font-size:13px;font-weight:800;color:var(--brand);margin-bottom:4px;}
+  .rule .t.mint{color:#2E8B63;border-color:#2E8B63;}
+  .rule .t.amber{color:#B7791F;}
+  .rule .b{font-size:14px;color:var(--muted);}
+  .rule .b b{color:var(--text);}
+  .rules{max-width:640px;margin:0 auto;text-align:left;}
 
-  /* ============ Responsive ============ */
-  @media (max-width:900px){
-    .pillar{grid-template-columns:1fr;gap:clamp(14px,3vw,22px);}
-    .pillar .no{display:flex;align-items:baseline;gap:14px;line-height:1;}
-    .pillar .no small{margin-top:0;}
-    .ai-grid{grid-template-columns:repeat(2,1fr);}
-    .steps{grid-template-columns:repeat(2,1fr);}
-    .stat-grid{grid-template-columns:repeat(2,1fr);}
-    .nav .links a.txt{display:none;}
-  }
-  @media (max-width:600px){
-    .spec-strip{grid-template-columns:repeat(2,1fr);gap:16px 12px;}
-    .rules{grid-template-columns:1fr;}
-    .hero .actions{flex-direction:column;align-items:stretch;}
-    .hero .actions .btn{width:100%;}
-    .foot .actions{flex-direction:column;align-items:stretch;}
-    .foot .actions .btn{width:100%;}
-  }
-  @media (max-width:420px){
-    .nav .btn{padding:8px 13px;font-size:12.5px;}
-    .nav .btn .long{display:none;}
-    .nav .btn .short{display:inline;}
-    .nav .logo i{width:24px;height:24px;border-radius:7px;font-size:11px;}
-    .nav .logo span{font-size:14px;}
-  }
-  @media (max-width:400px){
-    .steps{grid-template-columns:1fr;}
-    .ai-grid{grid-template-columns:1fr;}
-    .hero h1{letter-spacing:-.04em;}
-  }
-  @media (prefers-reduced-motion:reduce){
+  .tech-point .icon{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;color:#fff;margin-bottom:16px;}
+  .tech-stack{background:linear-gradient(135deg,#E8557A,#FF6B8A);color:#fff;border-radius:24px;padding:30px 22px;position:relative;overflow:hidden;margin-top:36px;}
+  .tech-stack h3{font-size:26px;}
+  .stack-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;}
+  @media (min-width:760px){.stack-grid{grid-template-columns:repeat(4,1fr);}}
+  .stack-item{background:rgba(255,255,255,.16);border-radius:12px;padding:14px 10px;text-align:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+  .stack-item b{display:block;font-size:16px;}
+  .stack-item span{font-size:12px;opacity:.88;}
+  .tech-foot{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;margin-top:8px;}
+
+  .manual-card{display:grid;gap:22px;align-items:center;}
+  @media (min-width:760px){.manual-card{grid-template-columns:1.4fr 1fr;}}
+  .manual-meta{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0;}
+
+  footer{background:var(--surface);border-top:1px solid var(--border);padding:44px 0 34px;}
+  .footer-grid{display:grid;gap:28px;}
+  @media (min-width:700px){.footer-grid{grid-template-columns:1fr auto;}}
+  .footer-links{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;}
+  .footer-bottom{margin-top:30px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center;line-height:1.9;}
+
+  /* ===== Reveal ===== */
+  html.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
+  html.js .reveal.is-visible{opacity:1;transform:translateY(0);}
+  .reveal-delay-1{transition-delay:.08s;}
+  .reveal-delay-2{transition-delay:.16s;}
+  .reveal-delay-3{transition-delay:.24s;}
+  @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
-    .js .reveal{opacity:1!important;transform:none!important;transition:none!important;transition-delay:0!important;}
-    .scroll-hint svg{animation:none;}
-    .btn,.stat,.step,.ai-card,.rule{transition:none!important;will-change:auto!important;}
-    .hero .wrap > *{animation:none!important;opacity:1!important;transform:none!important;}
+    html.js .reveal{opacity:1;transform:none;transition:none;}
+    *{transition:none !important;animation:none !important;}
   }
-  /* 降低透明度偏好：玻璃材质转更实、去掉模糊，避免可读性下降 */
-  @media (prefers-reduced-transparency:reduce){
-    .nav{background:rgba(15,7,32,.94);-webkit-backdrop-filter:none;backdrop-filter:none;}
-    .step,.rule,.stat,.ai-card{background:rgba(255,255,255,.10);-webkit-backdrop-filter:none;backdrop-filter:none;}
-    .ambient{opacity:.45;}
-  }
+  :focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:4px;}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 </style>
 </head>
 <body>
-<script>document.documentElement.classList.add('js');</script>
-<div class="ambient" aria-hidden="true"></div>
 
-<!-- ============ Nav ============ -->
-<nav class="nav">
-  <div class="wrap">
-    <a class="logo" href="/"><i>我</i><span>我ai学习</span></a>
-    <div class="links">
-      <a class="txt" href="#why">为什么</a>
-      <a class="txt" href="#how">怎么用</a>
-      <a class="txt" href="guide.html">手册</a>
-      <a class="btn btn-primary" href="app"><span class="long">立即进入</span><span class="short">进入</span></a>
+<!-- ===== 导航 ===== -->
+<nav class="nav" aria-label="主导航">
+  <div class="container nav-inner">
+    <a href="#hero" class="nav-brand" aria-label="我ai学习 首页">
+      <span class="nav-logo brand-gradient">我</span>
+      <span>我ai学习</span>
+    </a>
+    <div class="nav-links">
+      <a href="#numbers">数据</a>
+      <a href="#why">核心价值</a>
+      <a href="#how">四步上手</a>
+      <a href="#rules">打卡规则</a>
+      <a href="#tech">技术安全</a>
+      <a href="guide.html">手册</a>
     </div>
+    <a href="app" class="btn btn-primary nav-cta">立即进入</a>
+    <button class="nav-burger" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="mobile-nav" onclick="toggleNav(this)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </div>
 </nav>
+<div class="nav-panel" id="mobile-nav">
+  <a href="#numbers" onclick="closeNav()">数据</a>
+  <a href="#why" onclick="closeNav()">核心价值</a>
+  <a href="#how" onclick="closeNav()">四步上手</a>
+  <a href="#rules" onclick="closeNav()">打卡规则</a>
+  <a href="#tech" onclick="closeNav()">技术安全</a>
+  <a href="guide.html" onclick="closeNav()">使用手册</a>
+  <a href="app" class="btn btn-primary">立即进入</a>
+</div>
 
-<!-- ============ Hero ============ -->
-<header class="hero">
-  <div class="wrap">
-    <div class="badge"><span class="dot"></span>2026 考研 · 专硕 095131 农艺与种业</div>
-
-    <h1 class="grad">我ai学习</h1>
-
-    <p class="claim">把科学记忆法，<br>装进一个网页。</p>
-
-    <p class="sub">不用下载，不用注册，不用联网。<br>打开就知道——今天该学什么。</p>
-
-    <div class="actions">
-      <a class="btn btn-primary" href="app">立即开始学习 →</a>
-      <a class="btn btn-ghost" href="guide.html">快速上手手册</a>
-    </div>
-
-    <div class="spec-strip">
-      <div class="s"><div class="n">273</div><div class="l">覆盖知识点</div></div>
-      <div class="s"><div class="n">90<em>天</em></div><div class="l">备考计划</div></div>
-      <div class="s"><div class="n">4<em>门</em></div><div class="l">目标科目</div></div>
-      <div class="s"><div class="n">0</div><div class="l">数据上传</div></div>
-    </div>
-
-    <div class="scroll-hint">
-      <span>SCROLL</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+<!-- ===== Hero ===== -->
+<header class="hero" id="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <span class="hero-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          2026 考研 · 专硕 095131 农艺与种业
+        </span>
+        <h1>我<span class="gradient-text">ai</span>学习</h1>
+        <p class="hero-tagline">把科学记忆法，装进一个网页。</p>
+        <p class="hero-position">273 个知识点 · 90 天计划 · 按 2026 考试大纲校准</p>
+        <p class="hero-desc">不用下载，不用注册，不用联网。打开就知道——今天该学什么。闯关、打卡、艾宾浩斯自动复习，数据全部留在本机。</p>
+        <div class="hero-chips">
+          <span class="chip chip-soft">零账号</span>
+          <span class="chip chip-soft">零上传</span>
+          <span class="chip chip-outline">离线可用</span>
+          <span class="chip chip-outline">可加主屏</span>
+        </div>
+        <div class="hero-ctas">
+          <a href="app" class="btn btn-primary">立即开始学习 →</a>
+          <a href="guide.html" class="btn btn-ghost">快速上手手册</a>
+        </div>
+      </div>
+      <div>
+        <div class="phone" aria-hidden="true">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ph-head">
+              <div class="ph-brand"><span class="ph-logo">我</span><b>我ai学习</b></div>
+              <div class="ph-mid"><span>第 7 天 · Day 7</span><i>基础阶段</i></div>
+              <div class="ph-user">错题 0</div>
+            </div>
+            <div class="ph-hero">
+              <span class="tag">今日待学 2 个任务</span>
+              <h5>今天按计划继续学习</h5>
+              <div class="sub">已完成 0 · 距考研还有 85 天</div>
+              <div class="ph-prog"><i></i></div>
+            </div>
+            <div class="ph-task"><div class="t"><i>政治</i><b>哲学基本问题</b><em>0%</em></div><span class="btn">去闯关</span></div>
+            <div class="ph-task"><div class="t"><i>英语</i><b>主谓一致</b><em>0%</em></div><span class="btn">去闯关</span></div>
+            <div class="ph-nav"><span>今日</span><span>考试历</span><span>题库</span><span>我的</span><b>统计</b></div>
+          </div>
+        </div>
+        <p class="hero-visual-caption">打开即是今日任务——这就是你每天看到的页面</p>
+      </div>
     </div>
   </div>
 </header>
 
-<!-- ============ Numbers ============ -->
-<section class="band-dark">
-  <div class="wrap center">
-    <div class="eyebrow reveal">一次说清楚</div>
-    <h2 class="headline reveal">数据，比形容词更有说服力</h2>
-    <p class="subline reveal">没有堆砌功能清单。下面四个数字，就是它的全部承诺。</p>
-
-    <div class="stat-grid">
-      <div class="stat reveal"><div class="n">273</div><div class="l">知识点</div><div class="d">四门科目全覆盖</div></div>
-      <div class="stat reveal"><div class="n">90<em>天</em></div><div class="l">备考周期</div><div class="d">基础 · 强化 · 冲刺</div></div>
-      <div class="stat reveal"><div class="n">5<em>档</em></div><div class="l">掌握度</div><div class="d">薄弱项自动排前</div></div>
-      <div class="stat reveal"><div class="n">0</div><div class="l">台服务器</div><div class="d">数据不出这台设备</div></div>
+<!-- ===== 数据 ===== -->
+<section id="numbers" class="section section-alt">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <p class="kicker">NUMBERS</p>
+      <h2>数据，比形容词更有说服力</h2>
+      <p class="lead">没有堆砌功能清单。下面四个数字，就是它的全部承诺。</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card stat-card reveal reveal-delay-1"><div class="n">273</div><div class="l">知识点</div><div class="d">四门科目按考纲全覆盖</div></div>
+      <div class="card stat-card reveal reveal-delay-2"><div class="n">90<small style="font-size:.55em">天</small></div><div class="l">备考周期</div><div class="d">基础 · 强化 · 冲刺</div></div>
+      <div class="card stat-card reveal reveal-delay-3"><div class="n">0</div><div class="l">台服务器</div><div class="d">数据不出这台设备</div></div>
     </div>
   </div>
 </section>
 
-<!-- ============ Pillars ============ -->
-<section id="why" class="band-light">
-  <div class="wrap">
-    <div class="center">
-      <div class="eyebrow reveal">核心卖点</div>
-      <h2 class="headline reveal">三件事，只做到极致</h2>
-      <p class="subline reveal" style="max-width:32em;margin-left:auto;margin-right:auto;">本地化、定制化、轻量化——每一条都不是形容词，是可以验证的事实。</p>
+<!-- ===== 核心价值 ===== -->
+<section id="why" class="section">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <p class="kicker">WHY</p>
+      <h2>三件事，只做到极致</h2>
+      <p class="lead">本地化、定制化、轻量化——每一条都不是形容词，是可以验证的事实。</p>
     </div>
-
-    <div class="pillar reveal">
-      <div class="no">01<small>本地化</small></div>
-      <div>
-        <h3>你的数据，<span class="hl">一步都不出这台设备</span></h3>
-        <p>全部学习记录存在浏览器本地，不注册、不上云、不经过任何服务器。断网能学，关掉网页也不丢。想换手机？一键导出 JSON，导入即恢复。</p>
-        <div class="chips"><span>零账号</span><span>零上传</span><span>离线可用</span><span>JSON 备份</span></div>
+    <div class="grid grid-3">
+      <div class="card feature reveal reveal-delay-1">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+        <h4>本地化</h4>
+        <p>全部学习记录存在浏览器本地，不注册、不上云、不经过任何服务器。断网能学，关掉网页也不丢；换设备一键导出导入。</p>
+        <div class="chips"><span class="chip chip-soft">零账号</span><span class="chip chip-soft">离线可用</span><span class="chip chip-outline">JSON 备份</span></div>
       </div>
-    </div>
-
-    <div class="pillar reveal">
-      <div class="no">02<small>定制化</small></div>
-      <div>
-        <h3>不是通用题库，<span class="hl">是为一个专业搭的系统</span></h3>
-        <p>科目锁定专硕 095131 农艺与种业（作物方向）。政治、英语、农综一二，每门都按真实考纲切分成可执行的知识点，并铺进 90 天的日程里。</p>
-        <div class="chips"><span>095131 专属</span><span>4 门科目</span><span>90 天日程</span><span>按学科出题</span></div>
+      <div class="card feature reveal reveal-delay-2">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
+        <h4>定制化</h4>
+        <p>科目锁定专硕 095131 农艺与种业（作物方向）。政治、英语、农综一、881 栽培育种，每门都按真实考纲切分知识点并铺进 90 天日程。</p>
+        <div class="chips"><span class="chip chip-soft">095131 专属</span><span class="chip chip-outline">4 门科目</span><span class="chip chip-outline">90 天日程</span></div>
       </div>
-    </div>
-
-    <div class="pillar reveal">
-      <div class="no">03<small>轻量化</small></div>
-      <div>
-        <h3>一个网页文件，<span class="hl">就是全部</span></h3>
-        <p>没有框架，没有安装包，没有开屏广告。加到主屏幕后与原生 App 无异——点开即用，秒级启动，永远不会提示你「有新版本待更新」。</p>
-        <div class="chips"><span>零安装</span><span>秒开</span><span>无广告</span><span>可加主屏</span></div>
+      <div class="card feature reveal reveal-delay-3">
+        <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a2 2 0 012-2 9 9 0 0112 12 2 2 0 01-2 2 9 9 0 01-12-12z"/><path d="M21 15a2 2 0 01-2 2 9 9 0 01-12-12 2 2 0 012-2"/></svg></div>
+        <h4>轻量化</h4>
+        <p>一个网页文件就是全部。没有安装包、没有开屏广告；加到主屏幕后与原生 App 无异，点开即用、秒级启动。</p>
+        <div class="chips"><span class="chip chip-soft">零安装</span><span class="chip chip-outline">秒开</span><span class="chip chip-outline">无广告</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ Quote / AI ============ -->
-<section class="quote">
-  <div class="wrap">
-    <div class="eyebrow reveal">AI 讲题</div>
-    <p class="big reveal">不止告诉你答案，<br><span class="grad">还教你怎么想。</span></p>
-    <p class="note reveal">一键生成按学科适配的讲解提示词。同一个「不会」，四门科目给你四种拆解方式。</p>
-
+<!-- ===== AI 讲题 ===== -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <p class="kicker">AI TUTOR</p>
+      <h2>不止告诉你答案，<span class="gradient-text">还教你怎么想</span></h2>
+      <p class="lead">一键生成按学科适配的讲解提示词；填上你自己的 API Key，更可直接在应用里开讲。</p>
+    </div>
     <div class="ai-grid">
-      <div class="ai-card reveal"><div class="k">政治</div><div class="v">画概念关系图，理清原理与结论的推导链</div></div>
-      <div class="ai-card reveal"><div class="k">英语</div><div class="v">拆长难句成分，逐层还原句子骨架</div></div>
-      <div class="ai-card reveal"><div class="k">农综一</div><div class="v">画遗传关系图，配比与性状一步步推</div></div>
-      <div class="ai-card reveal"><div class="k">农综二</div><div class="v">结合田间实例，把机理讲成能记住的场景</div></div>
+      <div class="ai-card reveal reveal-delay-1"><span class="k">政治</span><p class="v">画概念关系图，理清原理与结论的推导链。</p></div>
+      <div class="ai-card reveal reveal-delay-2"><span class="k">英语</span><p class="v">拆长难句成分，逐层还原句子骨架。</p></div>
+      <div class="ai-card reveal reveal-delay-3"><span class="k">农综一</span><p class="v">画遗传关系图，配比与性状一步步推。</p></div>
+      <div class="ai-card reveal reveal-delay-4"><span class="k">881 栽培育种</span><p class="v">结合田间实例，把机理讲成能记住的场景。</p></div>
     </div>
   </div>
 </section>
 
-<!-- ============ Memory curve ============ -->
-<section class="band-cream">
-  <div class="wrap center">
-    <div class="eyebrow reveal">复习引擎</div>
-    <h2 class="headline reveal">在你<span class="hl">快要忘记</span>的那一刻，<br>把它推回你面前</h2>
-    <p class="subline reveal" style="max-width:33em;margin-left:auto;margin-right:auto;">
-      艾宾浩斯遗忘曲线自动排期。你不需要记「哪天该复习什么」——闯关通过的那一刻，下次复习时间就已经排好了。答错则自动降级、提前重排，薄弱项永远排在最前面。
-    </p>
-    <div class="chips" style="justify-content:center;">
-      <span>自动排期</span><span>薄弱优先</span><span>闯关校验</span><span>连胜加成</span>
+<!-- ===== 复习引擎 ===== -->
+<section class="section">
+  <div class="container center">
+    <div class="sec-head center reveal">
+      <p class="kicker">REVIEW ENGINE</p>
+      <h2>在你<span class="gradient-text">快要忘记</span>的那一刻，<br>把它推回你面前</h2>
+      <p class="lead" style="max-width:33em;margin-left:auto;margin-right:auto;">艾宾浩斯遗忘曲线自动排期，并按照答对率自适应拉长或缩短间隔。闯关通过的那一刻，下次复习时间就已经排好了；薄弱项永远排在最前面。</p>
+    </div>
+    <div class="hero-chips" style="justify-content:center;margin-top:0;">
+      <span class="chip chip-soft">自动排期</span>
+      <span class="chip chip-soft">自适应间隔</span>
+      <span class="chip chip-outline">薄弱优先</span>
+      <span class="chip chip-outline">连胜加成</span>
     </div>
   </div>
 </section>
 
-<!-- ============ Steps ============ -->
-<section id="how" class="band-light">
-  <div class="wrap center">
-    <div class="eyebrow reveal">四步上手</div>
-    <h2 class="headline reveal">从打开到开始学，<br>不超过一分钟</h2>
-    <p class="subline reveal" style="max-width:30em;margin-left:auto;margin-right:auto;">没有引导流程，没有配置项。真的就是打开、看、学。</p>
-
-    <div class="steps">
-      <div class="step reveal"><div class="num">01</div><h4>打开网页</h4><p>访问后一键「添加到主屏幕」。</p></div>
-      <div class="step reveal"><div class="num">02</div><h4>看今日</h4><p>首页直接列出今天该学的内容。</p></div>
-      <div class="step reveal"><div class="num">03</div><h4>学完闯关</h4><p>5 题答对 4 题，才算真掌握。</p></div>
-      <div class="step reveal"><div class="num">04</div><h4>按时复习</h4><p>到期自动推送，无需自己安排。</p></div>
+<!-- ===== 四步上手 ===== -->
+<section id="how" class="section section-alt">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <p class="kicker">QUICK START</p>
+      <h2>从打开到开始学，不超过一分钟</h2>
+      <p class="lead">没有引导流程，没有配置项。真的就是打开、看、学。</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card step reveal reveal-delay-1"><span class="step-num brand-gradient">1</span><h3>打开网页</h3><p>访问后一键「添加到主屏幕」。</p></div>
+      <div class="card step reveal reveal-delay-2"><span class="step-num brand-gradient">2</span><h3>看今日</h3><p>首页直接列出今天该学的内容。</p></div>
+      <div class="card step reveal reveal-delay-3"><span class="step-num brand-gradient">3</span><h3>学完闯关</h3><p>判断、填空、术语解释等七类题型，答对通过才算掌握。</p></div>
+      <div class="card step reveal reveal-delay-1"><span class="step-num brand-gradient">4</span><h3>按时复习</h3><p>到期自动排期，无需自己安排；错题按间隔重练。</p></div>
+      <div class="card step reveal reveal-delay-2"><span class="step-num brand-gradient">5</span><h3>看统计</h3><p>掌握度趋势、每日热力、科目雷达一目了然。</p></div>
+      <div class="card step reveal reveal-delay-3"><span class="step-num brand-gradient">6</span><h3>备个份</h3><p>明文或口令加密导出，换设备导入即恢复。</p></div>
     </div>
   </div>
 </section>
 
-<!-- ============ Rules（次要信息，收敛展示） ============ -->
-<section class="band-cream">
-  <div class="wrap center">
-    <div class="eyebrow reveal">打卡规则</div>
-    <h2 class="headline reveal">简单，但不放水</h2>
-    <p class="subline reveal" style="max-width:30em;margin-left:auto;margin-right:auto;">当天任务全部完成即打卡成功。漏了可以补，但必须先学完。</p>
+<!-- ===== 打卡规则 ===== -->
+<section id="rules" class="section">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <p class="kicker">RULES</p>
+      <h2>简单，但不放水</h2>
+      <p class="lead">当天任务全部完成即打卡成功。漏了可以补，但必须先学完。</p>
+    </div>
+    <div class="rules reveal">
+      <div class="rule"><div class="t">每日打卡</div><div class="b">把<b>当日全部任务对应的知识点</b>闯关通过，这一天自动标记为「已打卡」。</div></div>
+      <div class="rule"><div class="t mint">连续加成</div><div class="b">连胜 <b>≥ 3 天</b>后，每日打卡奖励享受 <b>1.5 倍</b>积分；7/14/21/30 天另有全勤里程碑奖励。</div></div>
+      <div class="rule"><div class="t amber">补卡机制</div><div class="b"><b>每天限补一次</b>。必须先完成当日任务，补卡发放<b>正常积分的一半</b>。</div></div>
+      <div class="rule"><div class="t">防划水</div><div class="b">闯关<b>两次未通过</b>不记掌握并扣 <b>20 分</b>；无题知识点须先读完再确认。这是护栏，不是惩罚。</div></div>
+    </div>
+  </div>
+</section>
 
-    <div class="rules">
-      <div class="rule reveal">
-        <div class="t">每日打卡</div>
-        <div class="b">把<b>当日全部任务对应的知识点</b>闯关通过，这一天自动标记为「已打卡」。</div>
+<!-- ===== 技术安全 ===== -->
+<section id="tech" class="section section-alt">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <p class="kicker">PRIVACY &amp; TECH</p>
+      <h2>底层技术架构</h2>
+      <p class="lead">把隐私安全做到极致，把成本降到零。</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card tech-point reveal reveal-delay-1">
+        <div class="icon brand-gradient"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg></div>
+        <h4>本地优先存储</h4>
+        <p class="muted">localStorage 主存储 + IndexedDB 大容量镜像，所有进度只保存在当前设备，清缓存后仍可自动恢复。</p>
       </div>
-      <div class="rule reveal">
-        <div class="t mint">连续加成</div>
-        <div class="b">连胜 <b>≥ 3 天</b>后，每日打卡奖励享受 <b>1.5 倍</b>积分加成。</div>
+      <div class="card tech-point reveal reveal-delay-2">
+        <div class="icon brand-gradient"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></div>
+        <h4>无采集、无埋点、无后台</h4>
+        <p class="muted">不存在服务器、行为统计或数据上报。零外部请求（CSP 白名单内只放行应用自身），数据永远只属于你自己。</p>
       </div>
-      <div class="rule reveal">
-        <div class="t amber">补卡机制</div>
-        <div class="b"><b>每天限补一次</b>。必须先完成当日任务，补卡发放<b>正常积分的一半</b>。</div>
+      <div class="card tech-point reveal reveal-delay-3">
+        <div class="icon brand-gradient"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3 2 4 2 6a2 2 0 11-4 0M9 17v-1a5 5 0 0110 0v1m-8-9a3 3 0 016 0"/></svg></div>
+        <h4>口令加密备份</h4>
+        <p class="muted">明文 JSON 或 AES-256-GCM 口令加密导出（PBKDF2 本地派生密钥），忘记口令无法找回，网盘同步也不怕。</p>
       </div>
-      <div class="rule reveal">
-        <div class="t ink">防划水</div>
-        <div class="b">闯关<b>两次未通过</b>不记掌握并扣 <b>20 分</b>。这是护栏，不是惩罚。</div>
+    </div>
+    <div class="tech-stack reveal">
+      <p style="font-weight:700;letter-spacing:.16em;font-size:13px;opacity:.88;text-transform:uppercase;margin-bottom:6px">TECH STACK</p>
+      <h3>技术栈</h3>
+      <div class="stack-grid">
+        <div class="stack-item"><b>纯原生 JS</b><span>零框架</span></div>
+        <div class="stack-item"><b>PWA 单文件</b><span>离线可用</span></div>
+        <div class="stack-item"><b>localStorage</b><span>+ IndexedDB</span></div>
+        <div class="stack-item"><b>Web Crypto</b><span>AES-256-GCM</span></div>
+      </div>
+      <p class="tech-foot">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        273 个知识点 · 764 道手写题 · 全部本地计算 · 0 服务器成本
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 手册 ===== -->
+<section class="section">
+  <div class="container">
+    <div class="card manual-card reveal">
+      <div>
+        <p class="kicker">USER MANUAL</p>
+        <h2>快速上手手册</h2>
+        <p class="lead">完整使用说明：打卡规则、闯关与复习机制、数据备份与恢复、常见问题速查。</p>
+        <div class="manual-meta">
+          <span class="chip chip-soft">网页版 · 即时阅读</span>
+          <span class="chip chip-outline">离线可读</span>
+        </div>
+      </div>
+      <div class="center">
+        <a href="guide.html" class="btn btn-primary btn-block">阅读使用手册</a>
+        <p class="muted" style="font-size:13px;margin:12px 0 0">看完 1 分钟上手，随时可回查</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ Footer CTA ============ -->
-<section class="foot">
-  <div class="wrap">
-    <div class="eyebrow reveal">现在开始</div>
-    <h2 class="display reveal">90 天，<br>从 8 月 2 日开跑</h2>
-    <p class="subline reveal">一个网页，装下你的整个备考节奏。</p>
-    <div class="actions">
-      <a class="btn btn-primary" href="app">立即开始学习 →</a>
-      <a class="btn btn-ghost" href="guide.html">先看看手册</a>
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-brand" style="font-size:22px">
+          <span class="nav-logo brand-gradient" style="width:38px;height:38px;font-size:18px">我</span>
+          我ai学习
+        </div>
+        <p class="muted" style="margin:10px 0 4px;font-weight:600">2026 考研备考工作台</p>
+        <p class="muted" style="font-size:14px">专硕 095131 农艺与种业（作物方向）· 数据只留在你的设备里。</p>
+        <a href="app" style="font-size:14px;font-weight:600">ixuexi.ninkoro.com/app</a>
+      </div>
+      <div class="footer-links">
+        <a href="#numbers">数据</a>
+        <a href="#why">核心价值</a>
+        <a href="#how">四步上手</a>
+        <a href="#tech">隐私安全</a>
+        <a href="guide.html">使用手册</a>
+        <a href="app">立即进入</a>
+      </div>
     </div>
-    <p class="foot-note">
-      我ai学习 · 专硕 095131 农艺与种业（作物方向）· 2026 考研备考工作台<br>
-      本地数据 · 离线可用 · 无账号 · 无广告 &nbsp;|&nbsp; <a href="app">ixuexi.ninkoro.com/app</a>
-    </p>
+    <div class="footer-bottom">
+      我ai学习 · 专硕 095131 农艺与种业（作物方向）· 2026 考研备考工作台<br />
+      © 2026 我ai学习. All rights reserved. 本地数据 · 离线可用 · 无账号 · 无广告
+    </div>
   </div>
-</section>
+</footer>
 
 <script>
-(function(){
-  var els = document.querySelectorAll('.reveal');
-  if(!els.length) return;
-  function showAll(){ for(var i=0;i<els.length;i++) els[i].classList.add('in'); }
-  if(!('IntersectionObserver' in window) ||
-     (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
-    showAll(); return;
+  function toggleNav(btn) {
+    var panel = document.getElementById('mobile-nav');
+    var open = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
   }
-  var io = new IntersectionObserver(function(entries){
-    for(var i=0;i<entries.length;i++){
-      var t=entries[i].target;
-      if(entries[i].isIntersecting){
-        // 同一容器内按文档顺序级联延迟，制造「成片载入」的连贯节奏（统一缓动语言）
-        var p=t.parentElement, sibs=p?p.querySelectorAll('.reveal'):null, idx=0;
-        if(sibs){for(var j=0;j<sibs.length;j++){if(sibs[j]===t){idx=j;break;}}}
-        t.style.transitionDelay=(Math.min(idx,8)*60)+'ms';
-        t.classList.add('in');
-        io.unobserve(t);
-      }
-    }
-  }, {rootMargin:'0px 0px -8% 0px', threshold:0.01});
-  for(var i=0;i<els.length;i++) io.observe(els[i]);
-  // 兜底：3s 后无论如何全部显示，避免任何环境下内容不可见
-  setTimeout(showAll, 3000);
-})();
+  function closeNav() {
+    document.getElementById('mobile-nav').classList.remove('open');
+    var btn = document.querySelector('.nav-burger');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-label', '打开菜单');
+  }
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function (el) { observer.observe(el); });
+  } else {
+    reveals.forEach(function (el) { el.classList.add('is-visible'); });
+  }
 </script>
-
 </body>
 </html>
