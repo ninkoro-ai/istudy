@@ -13,11 +13,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: 单元测试
-        run: npm test
-      - name: Lint
-        run: npm run lint
-      - name: 构建（含数据校验）
-        run: node build/build.mjs
-      - name: 数据审计
-        run: node scripts/audit.mjs
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build

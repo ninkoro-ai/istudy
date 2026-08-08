@@ -1,0 +1,61 @@
+{
+  "$schema": "exam-package/questions.schema.json",
+  "note": "type ∈ single|judge|short|ai_open。single 用 options，judge 用 answer true/false，short/ai_open 提供 reference 参考答案。",
+  "questions": [
+    {
+      "id": "q001",
+      "knowledge_id": "botany_chloroplast",
+      "type": "single",
+      "difficulty": 2,
+      "content": "光合作用暗反应（卡尔文循环）发生的场所是？",
+      "options": ["类囊体膜", "叶绿体基质", "细胞质基质", "线粒体基质"],
+      "answer": 1,
+      "analysis": "暗反应（CO₂ 固定与 C₃ 还原）发生在叶绿体基质；类囊体膜是光反应场所。"
+    },
+    {
+      "id": "q002",
+      "knowledge_id": "physio_c3_c4",
+      "type": "single",
+      "difficulty": 3,
+      "content": "下列属于 C4 植物的是？",
+      "options": ["水稻", "小麦", "玉米", "大豆"],
+      "answer": 2,
+      "analysis": "玉米、甘蔗为典型 C4 植物，经 PEP 羧化形成 C4 中间产物；水稻小麦为 C3 植物。"
+    },
+    {
+      "id": "q003",
+      "knowledge_id": "botany_root_primary",
+      "type": "judge",
+      "difficulty": 1,
+      "content": "凯氏带位于根的表皮层。",
+      "answer": false,
+      "analysis": "凯氏带位于内皮层细胞径向壁，而非表皮层。"
+    },
+    {
+      "id": "q004",
+      "knowledge_id": "gen_mendel_segregation",
+      "type": "judge",
+      "difficulty": 1,
+      "content": "杂合体 Aa 自交，F₂ 表现型分离比为 3:1。",
+      "answer": true,
+      "analysis": "完全显性且配子均等时，F₂ 表现型为显性:隐性 = 3:1，基因型 AA:Aa:aa = 1:2:1。"
+    },
+    {
+      "id": "q005",
+      "knowledge_id": "physio_water_potential",
+      "type": "short",
+      "difficulty": 2,
+      "content": "简述水势的概念及其在水分子流动方向判断中的作用。",
+      "reference": "水势表示水的化学势，纯水为 0、溶液为负；水由高水势向低水势移动，根细胞水势低于土壤溶液时吸水。"
+    },
+    {
+      "id": "q006",
+      "knowledge_id": "physio_photosynthesis",
+      "type": "ai_open",
+      "difficulty": 3,
+      "content": "解释光合作用光反应的过程，并说明光反应与暗反应的联系。",
+      "reference": "光反应在类囊体膜进行：水的光解、电子传递、光合磷酸化生成 ATP 与 NADPH，并释放 O₂；暗反应利用 ATP/NADPH 在基质固定 CO₂ 合成糖，两者经 ATP/NADPH 联系。",
+      "grading_dimensions": ["知识完整性", "逻辑结构", "专业准确性"]
+    }
+  ]
+}

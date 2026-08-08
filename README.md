@@ -1,80 +1,57 @@
-# 我ai学习（istudy）· 本地化备考工作台
+# AI Exam OS
 
-专为 **2026 考研专硕 095131 农艺与种业（作物方向）** 打造的备考工作台：273 个知识点（按 2026 考试大纲校准）、90 天计划、自适应艾宾浩斯复习、闯关打卡、错题重练、统计报表、可内嵌 AI 讲题。
+本地优先 AI 个性化考试学习系统（V1.0，农学考研为第一阶段产品）。
 
-**0 成本 · 本地化运行**：纯静态网页，数据全部存在浏览器本地，零账号、零上传、零服务器费用、断网可学。
+> 依据：《AI Exam OS PRD V1.0》（用户提供，2026-08-08）
+> 三原则：**Local First**（核心功能离线可用）、**AI Optional**（AI 是可插拔增强）、**Config Driven**（考试系统 = 学习引擎 + 考试配置包）。
 
----
+## 目录
 
-## 一、怎么用
+```
+ai-exam-os/
+├── docs/
+│   ├── ARCHITECTURE.md      # 系统架构设计图（分层/引擎/时序/数据流）
+│   └── PHASE1_TASKS.md      # Phase 1 开发任务拆解（Cursor 任务粒度）
+└── config/
+    └── agriculture_339/     # 农学 339 第一版知识库 JSON 模板（Exam Package）
+        ├── exam.json
+        ├── subjects.json
+        ├── knowledge.json
+        ├── questions.json
+        ├── learning_strategy.json
+        ├── ai_prompt.json
+        └── README.md        # 配置包规范与校验规则
+```
 
-**方式 A（最简单）**：双击 `app.html` 即可使用全部核心功能（file:// 下 PWA 安装/离线不可用）。
+## 执行状态
 
-**方式 B（推荐）**：双击 `启动-本地服务.bat`，浏览器自动打开 `http://127.0.0.1:8080/`，完整支持 PWA、添加到主屏幕、断网使用。仅需本机装有 [Node.js](https://nodejs.org/)。
+- [x] 三件套（架构 / 知识库模板 / 任务拆解）
+- [x] Phase 0：React + TS + Tailwind + PWA + Dexie 基础框架
+- [x] Phase 1：农学核心学习闭环（目标创建 / 知识体系 / 计划 / 学习 / 测试 / 复习 / 掌握度 / 备份）
+- [x] Phase 2（轻）：错题本 / 学习报告 / 会话计时
+- [ ] Phase 3：AI 增强（用户自带 Key，Provider 模式）
+- [ ] Phase 4：AI 考试系统生成器（大纲 → Exam Package）
 
-**方式 C（可选）**：纯静态文件，可免费托管到 Cloudflare Pages / GitHub Pages（仓库已含 `_headers`、`sw.js`、`manifest.webmanifest` 与 CI 工作流）。
-
-## 二、功能一览
-
-| 模块 | 说明 |
-|---|---|
-| 今日打卡 | 每日任务清单、进度、打卡奖励（连胜≥3 天 1.5 倍，含当天） |
-| 考试历 | 90 天日历、缺卡标记、补卡（奖励为正常一半）、每日备注 |
-| 题库 | 三级导航、全站搜索、闯关答题、错题本（间隔排期重练） |
-| 我的 | 积分、成就、奖励兑换、月假、明文/加密备份、导入/清空 |
-| AI 讲题 | 学科定制提示词；可填自己的 API Key「直接开讲」；提示词存为脚本 |
-| 复习引擎 | EB 间隔参数化，按答对率自适应拉长/缩短，掌握度 0–100 |
-| 统计 | 掌握度趋势、每日热力、科目雷达、学习概览（本地 SVG） |
-
-## 三、数据安全
-
-- 主存储 localStorage + IndexedDB 大容量镜像（清缓存自动恢复）；
-- 明文 JSON 导出 / 口令加密导出（AES-256-GCM + PBKDF2）；
-- 导入前自动备份当前数据；加密备份口令忘记无法找回。
-
-## 四、v2.2 新增能力
-
-1. **题库**：按 2026 考试大纲校准至 **273 个知识点**；手写题 140 知识点 / 764 题；自动出题含「属于/正确/错误/数值/判断/填空/术语解释」七类题型；全部知识点可答题。
-2. **复习算法**：EB 间隔参数化；按正确率自适应（≥90% 拉长并跳步、<60% 缩短）；基线改「上次复习成功日」。
-3. **数据与同步**：IndexedDB 镜像恢复；口令加密备份；备份格式与同步路径评估文档。
-4. **积分经济**：连胜含当天；7/14/21/30 天全勤里程碑奖励；错题清零奖励；防重复加分。
-5. **错题重练**：[1,3,7] 天间隔排期，到期一键重练。
-6. **统计页**：趋势 / 热力 / 雷达 / 概览（零依赖 SVG）。
-7. **AI 能力**：BYO API Key 内嵌讲题；提示词脚本复用。
-8. **PWA 体验**：新版本提示 + 一键刷新；安装引导；桌面宽屏适配。
-9. **可访问性**：焦点陷阱、ARIA、键盘导航。
-10. **工程化**：`src/` + `data/*.json` + 极简构建（构建期校验）；ESLint；CI/Pages 工作流；Playwright 冒烟测试；按需渲染。
-11. **UI 原生化**：参照心桥 App 设计规范——手机壳式桌面呈现（480px 应用列 + 衬景）、三段式应用头（品牌 + 第 X 天 + 工具）、底部胶囊 Toast、弹层把手、卡片级联入场、按压反馈、输入防缩放（16px）。
-12. **PWA / iOS WebView 专项**：珊瑚色实底应用头保证 `black-translucent` 白字状态栏可读；弹层高度跟随键盘（visualViewport）；底部弹层安全区适配；iOS 长按菜单/选择手柄禁用；iOS「添加到主屏幕」引导；manifest 补全 `id/display_override/categories`；`format-detection` 防号码误识别。
-13. **底部导航重构（SafeAreaLayout）**：TabBar 改为 `position:fixed; bottom:0; height:calc(64px + safe-area)`——底边永远贴屏、安全区只增加内部高度（不整体上移、无白边）；内容区统一用 `calc(64px + safe-area)` 预留；顶部/底部安全区收敛为 `--safe-top/--safe-bottom` 统一变量，后续弹窗/提示条/Toast 共用。
-14. **UI v3 重构**：保留全部核心功能，按产品功能重写页面结构与样式——移动优先（iPhone SE/15 与桌面均无横向溢出）、固定贴底 TabBar、统一安全区变量、全组件（卡片/按钮/徽章/弹层/日历/统计图等）重新实现，去除历史样式叠加。
-
-## 五、开发 / 测试
+## 本地运行
 
 ```bash
-npm ci                  # 安装开发依赖（ESLint / Playwright）
-npm test                # 单元测试（28 项）
-npm run lint            # ESLint
-npm run audit           # 数据与实现审计
-npm run build           # 构建 app.html（含数据校验）
-npm run build:min       # 构建并压缩
-npm run e2e             # Playwright UI 冒烟测试
-npm run serve           # 本地运行 http://127.0.0.1:8080/
+npm install
+npm run dev        # 开发模式 http://localhost:5173
+npm run build      # 构建到 dist/（含 PWA）
+npm run preview    # 预览构建产物
+npm test           # 引擎单元测试（11 项）
+npm run smoke      # UI 冒烟测试（无头浏览器走核心闭环）
 ```
 
-## 六、文件结构
+## 已实现功能
 
-```
-index.html            营销落地页
-app.html              构建产物（单文件 PWA；由 src/ + data/ 生成，勿手改）
-app.template.html     页面模板（HTML/CSS 骨架）
-src/                  源码（按模块拆分，构建时合并）
-data/                 内容数据（kp / plan / quiz / quiz-extra）
-build/                极简构建脚本（build.mjs 组装+校验）
-sw.js / manifest.webmanifest / _headers   PWA 与安全头
-server.js / 启动-本地服务.bat   本地零依赖运行
-tests/                单元测试 + e2e 冒烟测试
-scripts/audit.mjs     数据审计脚本
-docs/                 审计报告、PRD、备份格式、同步与 AI 评估文档
-.github/workflows/     CI 与 GitHub Pages 兜底部署
-```
+- 考试目标创建（选 339 / 考试日期 / 每日时间 / 水平）
+- 今日任务（新学 3 + 复习 8 + 测试 10，按优先级公式排序）
+- 知识库（科目→章节→知识点，六类学习元素，前置/关联，AI 固定提示词复制）
+- 测评（单选 / 判断 / 简答 / AI 问答自评，限时，通过判定，逐题解析）
+- 复习（间隔 [1,3,7,15,30]、答错重置、高正确率跳步、到期清单）
+- 掌握度（0–100，等级映射，随学习/测评/复习联动）
+- 错题本（错误计数、按 [1,3,7] 天排期重练、通过移除）
+- 报告（覆盖率 / 平均掌握度 / 连续学习 / 专注时长 / 科目分布）
+- 专注计时（会话计时，计入日/周报告）
+- 数据（IndexedDB 本地存储；JSON 导出 / 导入 / 清空）

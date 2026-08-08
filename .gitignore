@@ -1,5 +1,3 @@
-.server.pid
-_dom.html
 node_modules/
-debug.log
-tmp/
+dist/
+*.local

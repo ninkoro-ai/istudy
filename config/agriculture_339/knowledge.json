@@ -1,0 +1,379 @@
+{
+  "$schema": "exam-package/knowledge.schema.json",
+  "note": "五级结构：Exam → Subject → Chapter → KnowledgePoint → LearningElement。type ∈ concept|structure|process|comparison|memory；prerequisite/related 引用本文件内 node.id。",
+  "nodes": [
+    {
+      "id": "botany_cell",
+      "name": "植物细胞",
+      "subjectId": "botany",
+      "subject": "植物学",
+      "chapterId": "botany_cell",
+      "chapter": "植物细胞",
+      "type": "concept",
+      "importance": "high",
+      "difficulty": 2,
+      "prerequisite": [],
+      "related": ["botany_chloroplast"],
+      "estimatedMinutes": 15,
+      "elements": {
+        "summary": "植物细胞是植物体结构和功能的基本单位，具有细胞壁、质体与中央大液泡三大特征结构。",
+        "plain": "植物细胞就像一个自带围墙（细胞壁）、厨房（叶绿体）和仓库（液泡）的微型工厂。",
+        "definition": "植物细胞由细胞壁、细胞膜、细胞质和细胞核构成；区别于动物细胞的特征结构包括细胞壁、质体（含叶绿体）和中央大液泡，胞间连丝沟通相邻细胞。",
+        "keyPoints": [
+          "细胞壁的组成（纤维素、果胶）与功能（保护、支持）",
+          "质体类型：叶绿体 / 有色体 / 白色体",
+          "中央大液泡与渗透调节",
+          "胞间连丝与共质体运输"
+        ],
+        "pitfalls": [
+          "误认为所有植物细胞都有叶绿体（根细胞没有）",
+          "混淆细胞壁与细胞膜的选择透过性",
+          "把胞间连丝说成质膜上的通道蛋白"
+        ],
+        "mnemonic": "壁（细胞壁）质（质体）泡（液泡）——植物细胞三件套"
+      }
+    },
+    {
+      "id": "botany_chloroplast",
+      "name": "叶绿体结构",
+      "subjectId": "botany",
+      "subject": "植物学",
+      "chapterId": "botany_cell",
+      "chapter": "植物细胞",
+      "type": "structure",
+      "importance": "high",
+      "difficulty": 3,
+      "prerequisite": ["botany_cell"],
+      "related": ["physio_photosynthesis"],
+      "estimatedMinutes": 20,
+      "elements": {
+        "summary": "叶绿体是光合作用的场所，由双层膜、类囊体（垛叠成基粒）与基质组成。",
+        "plain": "叶绿体是植物把太阳能变成化学能的‘能量工厂’，类囊体是生产线，基质是装配车间。",
+        "definition": "叶绿体具有双层被膜；内部为基质，含可溶性酶；膜系统由类囊体构成，类囊体垛叠形成基粒，类囊体膜上分布光合色素与电子传递链。",
+        "keyPoints": [
+          "类囊体膜：光反应场所（色素、电子传递、ATP 合成）",
+          "基质：暗反应（卡尔文循环）场所",
+          "光合色素种类与吸收光谱",
+          "基粒与类囊体的结构关系"
+        ],
+        "pitfalls": [
+          "误以为暗反应发生在类囊体膜（实际在基质）",
+          "把光反应写成不需要光",
+          "混淆叶绿体与线粒体的功能定位"
+        ],
+        "mnemonic": "类囊体亮（光反应），基质暗（暗反应）"
+      }
+    },
+    {
+      "id": "physio_photosynthesis",
+      "name": "光合作用",
+      "subjectId": "plant_physiology",
+      "subject": "植物生理学",
+      "chapterId": "physio_photosynthesis",
+      "chapter": "光合作用",
+      "type": "process",
+      "importance": "high",
+      "difficulty": 4,
+      "prerequisite": ["botany_chloroplast"],
+      "related": ["physio_c3_c4"],
+      "estimatedMinutes": 20,
+      "elements": {
+        "summary": "光合作用分光反应与暗反应：光反应产 ATP/NADPH，暗反应固定 CO₂ 合成糖。",
+        "plain": "光合作用就像用太阳能给植物充电：先充电（光反应），再装配产品（暗反应）。",
+        "definition": "光合作用指植物利用光能，将 CO₂ 和 H₂O 合成有机物并释放 O₂ 的过程，总反应 CO₂+H₂O → (CH₂O)+O₂；包括类囊体膜上的光反应与基质中的卡尔文循环。",
+        "keyPoints": [
+          "光反应：水的光解、电子传递、光合磷酸化（ATP/NADPH）",
+          "暗反应：CO₂ 固定 → C₃ 还原 → RuBP 再生",
+          "光反应与暗反应的物质与能量联系",
+          "影响光合的环境因子：光、CO₂、温度"
+        ],
+        "pitfalls": [
+          "暗反应不直接需要光，但依赖光反应产物",
+          "O₂ 来自水的光解而非 CO₂",
+          "光合磷酸化与氧化磷酸化混淆"
+        ],
+        "mnemonic": "水在亮处裂，碳在暗中固——光裂水、暗固碳"
+      }
+    },
+    {
+      "id": "physio_c3_c4",
+      "name": "C3 与 C4 植物",
+      "subjectId": "plant_physiology",
+      "subject": "植物生理学",
+      "chapterId": "physio_photosynthesis",
+      "chapter": "光合作用",
+      "type": "comparison",
+      "importance": "medium",
+      "difficulty": 3,
+      "prerequisite": ["physio_photosynthesis"],
+      "related": [],
+      "estimatedMinutes": 15,
+      "elements": {
+        "summary": "C3 植物以 C₃ 为 CO₂ 固定初产物；C4 植物先经 PEP 羧化形成 C₄，再在维管束鞘细胞释放 CO₂。",
+        "plain": "C3 植物直接‘吃’CO₂；C4 植物先‘打包’再‘拆包’，高温强光下效率更高。",
+        "definition": "C3 植物（水稻、小麦）仅通过卡尔文循环固定 CO₂，初产物为三碳化合物 C₃；C4 植物（玉米、甘蔗）在叶肉细胞经 PEP 羧化酶生成四碳化合物 C₄，转运至维管束鞘细胞释放 CO₂ 供卡尔文循环，具 CO₂ 浓缩机制。",
+        "keyPoints": [
+          "C4 途径的两类细胞分工（叶肉细胞 + 维管束鞘细胞）",
+          "PEP 羧化酶与 RuBP 羧化酶的差别",
+          "C4 植物在高温强光下光呼吸低、效率高",
+          "代表植物：C3（稻麦）、C4（玉米甘蔗）"
+        ],
+        "pitfalls": [
+          "把 C4 植物说成没有卡尔文循环",
+          "混淆 PEP 羧化与 RuBP 羧化",
+          "C4 不代表‘四碳化合物是最终产物’"
+        ],
+        "mnemonic": "C3 直接吃，C4 打包吃——玉米甘蔗先打包"
+      }
+    },
+    {
+      "id": "physio_hormone_class",
+      "name": "植物激素分类",
+      "subjectId": "plant_physiology",
+      "subject": "植物生理学",
+      "chapterId": "physio_hormone",
+      "chapter": "植物激素",
+      "type": "memory",
+      "importance": "medium",
+      "difficulty": 2,
+      "prerequisite": [],
+      "related": ["physio_photosynthesis"],
+      "estimatedMinutes": 10,
+      "elements": {
+        "summary": "五大经典激素：生长素、赤霉素、细胞分裂素、脱落酸、乙烯，各自主导不同发育过程。",
+        "plain": "五种激素就像五种指令：生长素指挥伸长，赤霉素催长，细胞分裂素催分裂，脱落酸叫停，乙烯催熟。",
+        "definition": "植物激素是植物体内产生的、微量即可显著调节生长发育的有机物质；经典五大类为 IAA、GA、CTK、ABA、Ethylene，另含油菜素内酯等新型激素。",
+        "keyPoints": [
+          "生长素：极性运输、顶端优势、两重性",
+          "赤霉素：促进茎伸长与种子萌发",
+          "细胞分裂素：促进细胞分裂、延缓衰老",
+          "脱落酸：促进休眠与脱落、抗逆",
+          "乙烯：促进成熟与脱落"
+        ],
+        "pitfalls": [
+          "生长素不是‘越多越好’（两重性）",
+          "脱落酸与赤霉素在休眠上拮抗",
+          "把乙烯说成只催熟果实"
+        ],
+        "mnemonic": "生赤细落乙——长、发、裂、停、熟"
+      }
+    },
+    {
+      "id": "botany_root_primary",
+      "name": "根的初生结构",
+      "subjectId": "botany",
+      "subject": "植物学",
+      "chapterId": "botany_root",
+      "chapter": "根",
+      "type": "structure",
+      "importance": "high",
+      "difficulty": 3,
+      "prerequisite": ["botany_cell"],
+      "related": [],
+      "estimatedMinutes": 20,
+      "elements": {
+        "summary": "根初生结构由外向内依次为表皮、皮层、维管柱，内皮层具凯氏带。",
+        "plain": "根的横切面像三层套筒：外皮（表皮）、海绵层（皮层）、管道中心（维管柱），中间有一道‘安检门’凯氏带。",
+        "definition": "双子叶植物根的初生结构自外向内为表皮、皮层（含内皮层，其径向壁具凯氏带）和维管柱（中柱鞘、初生木质部与初生韧皮部相间排列）。",
+        "keyPoints": [
+          "根尖分区：根冠、分生区、伸长区、成熟区（根毛区）",
+          "凯氏带的位置与作用（阻断质外体运输）",
+          "初生木质部与韧皮部的排列方式",
+          "双子叶与单子叶根结构的差异"
+        ],
+        "pitfalls": [
+          "凯氏带在内皮层而非表皮",
+          "根毛区在成熟区而非伸长区",
+          "初生木质部辐射角与韧皮部相间（非相对）"
+        ],
+        "mnemonic": "表-皮-柱（表皮→皮层→维管柱），凯氏带在内皮"
+      }
+    },
+    {
+      "id": "physio_water_potential",
+      "name": "水势",
+      "subjectId": "plant_physiology",
+      "subject": "植物生理学",
+      "chapterId": "physio_water",
+      "chapter": "水分代谢",
+      "type": "concept",
+      "importance": "high",
+      "difficulty": 3,
+      "prerequisite": ["botany_cell"],
+      "related": ["physio_transpiration"],
+      "estimatedMinutes": 15,
+      "elements": {
+        "summary": "水势是判断水分流动方向的指标，水从高水势流向低水势。",
+        "plain": "水势就像水的‘水位差’：水总是往低处（低水势）流，谁更缺水谁水势更低。",
+        "definition": "水势（ψw）表示水的化学势，纯水水势为 0，溶液中为负值；水由水势高处向低处移动，ψw = ψs + ψp（渗透势 + 压力势）。",
+        "keyPoints": [
+          "水势组成：渗透势、压力势、衬质势",
+          "吸水的动力：根细胞水势低于土壤溶液",
+          "蒸腾拉力是水分上升的主要动力",
+          "质外体与共质体吸水途径"
+        ],
+        "pitfalls": [
+          "水往‘低水势’流，不是往‘高水势’流",
+          "纯水水势为 0，溶液水势为负",
+          "混淆水势与渗透压"
+        ],
+        "mnemonic": "水往低势走——低水势吸水"
+      }
+    },
+    {
+      "id": "gen_mendel_segregation",
+      "name": "分离定律",
+      "subjectId": "genetics",
+      "subject": "遗传学",
+      "chapterId": "gen_mendel",
+      "chapter": "孟德尔遗传",
+      "type": "process",
+      "importance": "high",
+      "difficulty": 3,
+      "prerequisite": ["gen_cell_meiosis"],
+      "related": ["gen_mendel_independent"],
+      "estimatedMinutes": 20,
+      "elements": {
+        "summary": "一对等位基因在配子形成时分离，F₂ 表现型 3:1、基因型 1:2:1。",
+        "plain": "一对基因像一副牌，配子只能拿到其中一张，所以杂合子自交后代出现 3:1。",
+        "definition": "分离定律：成对的等位基因在形成配子时彼此分离，分别进入不同配子；杂合体 Aa 自交，F₂ 基因型 AA:Aa:aa=1:2:1，表现型 3:1。",
+        "keyPoints": [
+          "测交与自交验证方法及比例",
+          "显隐性、纯合/杂合概念",
+          "分离比成立的条件（配子均等、存活率等）",
+          "显隐性关系的相对性（不完全显性、共显性）"
+        ],
+        "pitfalls": [
+          "基因型比 1:2:1 与表现型比 3:1 混淆",
+          "测交比例 1:1 记忆错误",
+          "把分离定律用于多基因同时分析"
+        ],
+        "mnemonic": "杂合自交 3:1，测交 1:1"
+      }
+    },
+    {
+      "id": "gen_variation_chromosome",
+      "name": "染色体结构变异",
+      "subjectId": "genetics",
+      "subject": "遗传学",
+      "chapterId": "gen_variation",
+      "chapter": "染色体变异与基因突变",
+      "type": "memory",
+      "importance": "medium",
+      "difficulty": 3,
+      "prerequisite": ["gen_cell_meiosis"],
+      "related": [],
+      "estimatedMinutes": 10,
+      "elements": {
+        "summary": "染色体结构变异四种：缺失、重复、倒位、易位。",
+        "plain": "染色体像一本书：缺页（缺失）、重印（重复）、倒装（倒位）、错装（易位）。",
+        "definition": "染色体结构变异按断裂-重接假说分为缺失、重复、倒位、易位四类；缺失与重复改变基因剂量，倒位改变基因排列顺序，易位涉及非同源染色体间片段互换。",
+        "keyPoints": [
+          "四类变异的定义与遗传效应",
+          "缺失杂合体可表现假显性",
+          "易位杂合体的半不育现象",
+          "细胞学鉴定（倒位圈、四体环等）"
+        ],
+        "pitfalls": [
+          "易位不改变基因总数但改变连锁关系",
+          "缺失与重复的剂量效应相反",
+          "倒位不一定丢失遗传物质"
+        ],
+        "mnemonic": "缺重倒易——缺页、重印、倒装、错装"
+      }
+    },
+    {
+      "id": "physio_transpiration",
+      "name": "蒸腾作用",
+      "subjectId": "plant_physiology",
+      "subject": "植物生理学",
+      "chapterId": "physio_water",
+      "chapter": "水分代谢",
+      "type": "process",
+      "importance": "medium",
+      "difficulty": 2,
+      "prerequisite": ["physio_water_potential"],
+      "related": [],
+      "estimatedMinutes": 15,
+      "elements": {
+        "summary": "蒸腾是水分以气态从植物体散失的过程，蒸腾拉力是水分上升的主要动力。",
+        "plain": "蒸腾像植物的‘呼吸排水’：叶片气孔打开，水变成水汽跑掉，顺带把根里的水一路拉上来。",
+        "definition": "蒸腾作用指水分以水蒸气形式经植物体表面（主要经气孔）散失的过程，包括气孔蒸腾、角质层蒸腾与皮孔蒸腾；蒸腾拉力驱动水分沿木质部上升。",
+        "keyPoints": [
+          "气孔蒸腾为主；气孔开闭与保卫细胞",
+          "蒸腾拉力与内聚力-张力学说",
+          "影响蒸腾的环境因子：光、温度、湿度、风",
+          "蒸腾的生理意义（降温、运输、供矿质）"
+        ],
+        "pitfalls": [
+          "蒸腾不是‘浪费水’，有生理意义",
+          "气孔关闭不等于完全不蒸腾（角质层蒸腾仍存在）",
+          "蒸腾拉力不是唯一吸水动力（根压为辅）"
+        ],
+        "mnemonic": "气孔是门，拉力是泵——蒸腾把水拉上楼"
+      }
+    },
+    {
+      "id": "gen_cell_meiosis",
+      "name": "减数分裂",
+      "subjectId": "genetics",
+      "subject": "遗传学",
+      "chapterId": "gen_cell",
+      "chapter": "遗传的细胞学基础",
+      "type": "process",
+      "importance": "high",
+      "difficulty": 3,
+      "prerequisite": ["botany_cell"],
+      "related": ["gen_mendel_segregation", "gen_mendel_independent"],
+      "estimatedMinutes": 20,
+      "elements": {
+        "summary": "减数分裂使染色体数目减半，是孟德尔分离与自由组合的细胞学基础。",
+        "plain": "减数分裂像‘分家’：一对对同源染色体各走一边，配子只带走一半。",
+        "definition": "减数分裂是生殖母细胞连续进行两次分裂、染色体复制一次，形成染色体数目减半配子的过程；前期Ⅰ发生联会与交叉互换。",
+        "keyPoints": [
+          "减数第一次分裂同源染色体分离",
+          "减数第二次分裂姐妹染色单体分离",
+          "联会、四分体与交叉互换",
+          "与有丝分裂的异同"
+        ],
+        "pitfalls": [
+          "减半发生在第一次分裂（同源分离）",
+          "交叉互换发生在前期Ⅰ",
+          "把减数分裂与有丝分裂混淆"
+        ],
+        "mnemonic": "一次复制两次分，同源先分姐妹后分"
+      }
+    },
+    {
+      "id": "gen_mendel_independent",
+      "name": "独立分配定律",
+      "subjectId": "genetics",
+      "subject": "遗传学",
+      "chapterId": "gen_mendel",
+      "chapter": "孟德尔遗传",
+      "type": "process",
+      "importance": "high",
+      "difficulty": 3,
+      "prerequisite": ["gen_mendel_segregation"],
+      "related": [],
+      "estimatedMinutes": 20,
+      "elements": {
+        "summary": "非同源染色体上的非等位基因自由组合，F₂ 表现型 9:3:3:1。",
+        "plain": "两对基因像两副独立的牌，洗牌时互不干扰，所以出现 9:3:3:1。",
+        "definition": "独立分配定律：位于非同源染色体上的非等位基因在形成配子时自由组合；双杂合体自交 F₂ 表现型比例为 9:3:3:1，基因型 9 种。",
+        "keyPoints": [
+          "9:3:3:1 与测交 1:1:1:1",
+          "适用条件：非同源染色体、独立分配",
+          "与连锁遗传的区别",
+          "多对基因的配子类型与组合数"
+        ],
+        "pitfalls": [
+          "9:3:3:1 是表现型比，不是基因型比",
+          "连锁基因不遵循独立分配",
+          "测交比例记忆错误"
+        ],
+        "mnemonic": "两对独立 9:3:3:1，测交 1:1:1:1"
+      }
+    }
+  ]
+}

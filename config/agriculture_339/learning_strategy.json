@@ -1,0 +1,70 @@
+{
+  "plan": {
+    "defaultDays": 90,
+    "phases": [
+      { "name": "基础", "ratio": 0.34, "desc": "教材通读 + 首轮覆盖" },
+      { "name": "强化", "ratio": 0.33, "desc": "专项提升 + 真题" },
+      { "name": "冲刺", "ratio": 0.33, "desc": "模拟 + 查漏 + 高频复习" }
+    ]
+  },
+  "dailyTask": {
+    "newKps": 3,
+    "reviewKps": 8,
+    "quizQuestions": 10,
+    "priorityFormula": {
+      "description": "任务优先级 = 重要度 × 遗忘程度 × 薄弱程度 ÷ 预计耗时",
+      "importanceWeight": 1,
+      "forgettingWeight": 1,
+      "weaknessWeight": 1,
+      "durationDivisor": 1
+    }
+  },
+  "review": {
+    "intervals": [1, 3, 7, 15, 30],
+    "baseline": "lastReview || lastStudy || planStart",
+    "wrongResetTo": 1,
+    "adaptive": {
+      "enabled": true,
+      "highAccuracyThreshold": 0.9,
+      "highIntervalMultiplier": 1.5,
+      "highStepAdvance": 2,
+      "lowAccuracyThreshold": 0.6,
+      "lowIntervalMultiplier": 0.6,
+      "lowStepAdvance": 0
+    },
+    "maxStep": 5
+  },
+  "mastery": {
+    "base": 60,
+    "weights": {
+      "learningCompletion": 0.3,
+      "quizAccuracy": 0.4,
+      "reviewPerformance": 0.3,
+      "forgettingDecay": 0.05
+    },
+    "levels": [
+      { "max": 30, "name": "陌生" },
+      { "max": 60, "name": "初步理解" },
+      { "max": 80, "name": "掌握" },
+      { "max": 95, "name": "熟练" },
+      { "max": 100, "name": "精通" }
+    ],
+    "range": [0, 100]
+  },
+  "quiz": {
+    "passRule": "题目数≤3 全对，>3 允许错 1 题",
+    "attemptsPerMastery": 2,
+    "cooldownAfterFail": "24h",
+    "timeLimitSeconds": 300
+  },
+  "pomodoro": {
+    "enabled": true,
+    "studyMinutes": 25,
+    "breakMinutes": 5,
+    "quizMinutes": 10
+  },
+  "wrongBook": {
+    "retryIntervals": [1, 3, 7],
+    "retryPassRemoves": true
+  }
+}

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tabbar-h: 60px;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: #F1EDEA;
+  color: #2B2328;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", "Microsoft YaHei", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+button { -webkit-tap-highlight-color: transparent; }
+input, select, textarea { font-size: 16px; }

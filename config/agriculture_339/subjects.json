@@ -1,0 +1,42 @@
+{
+  "subjects": [
+    {
+      "id": "botany",
+      "name": "植物学",
+      "weight": 0.33,
+      "chapters": [
+        { "id": "botany_cell", "name": "植物细胞" },
+        { "id": "botany_tissue", "name": "植物组织" },
+        { "id": "botany_root", "name": "根" },
+        { "id": "botany_stem", "name": "茎" },
+        { "id": "botany_leaf", "name": "叶" },
+        { "id": "botany_flower", "name": "花与果实" }
+      ]
+    },
+    {
+      "id": "plant_physiology",
+      "name": "植物生理学",
+      "weight": 0.34,
+      "chapters": [
+        { "id": "physio_water", "name": "水分代谢" },
+        { "id": "physio_mineral", "name": "矿质营养" },
+        { "id": "physio_photosynthesis", "name": "光合作用" },
+        { "id": "physio_respiration", "name": "呼吸作用" },
+        { "id": "physio_transport", "name": "同化物运输" },
+        { "id": "physio_hormone", "name": "植物激素" }
+      ]
+    },
+    {
+      "id": "genetics",
+      "name": "遗传学",
+      "weight": 0.33,
+      "chapters": [
+        { "id": "gen_cell", "name": "遗传的细胞学基础" },
+        { "id": "gen_mendel", "name": "孟德尔遗传" },
+        { "id": "gen_linkage", "name": "连锁遗传" },
+        { "id": "gen_variation", "name": "染色体变异与基因突变" },
+        { "id": "gen_quantitative", "name": "数量性状遗传" }
+      ]
+    }
+  ]
+}

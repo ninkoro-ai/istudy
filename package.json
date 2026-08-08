@@ -1,20 +1,36 @@
 {
-  "name": "istudy",
-  "version": "2.2.0",
+  "name": "ai-exam-os",
   "private": true,
-  "description": "我ai学习 · 本地化备考工作台（零后端单文件 PWA）",
+  "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "build": "node build/build.mjs",
-    "build:min": "node build/build.mjs --minify",
-    "validate": "node build/build.mjs --dry-run",
-    "test": "node --test tests/unit.test.mjs",
-    "audit": "node scripts/audit.mjs",
-    "serve": "node server.js",
-    "e2e": "node tests/e2e/smoke.mjs",
-    "lint": "eslint src build tests scripts server.js eslint.config.mjs"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint src scripts",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "dexie": "^4.0.11",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
     "eslint": "^9.39.5",
-    "playwright-core": "1.62"
+    "globals": "^17.9.0",
+    "playwright-core": "^1.62.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.0",
+    "vite": "^6.3.5",
+    "vite-plugin-pwa": "^0.21.1",
+    "vitest": "^3.1.0"
   }
 }
